@@ -1,13 +1,22 @@
 package model;
 
 public class Song {
-	private String songName;
+	private final String songName;
 	private boolean favorite;
 	private int rating;
 	
+	// main constructor
+	// @pre songName != ""
 	public Song(String songName) {
 		this.songName = songName;
 	}
+	
+	// copy constructor
+	public Song(Song other) {
+		this.songName = other.songName;
+		this.favorite = other.favorite;
+		this.rating = other.rating;
+		}
 	
 	public String getSongName() {
 		return this.songName;
@@ -35,4 +44,3 @@ public class Song {
 	}
 
 }
-

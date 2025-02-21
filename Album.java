@@ -4,10 +4,17 @@ import java.util.ArrayList;
 
 public class Album {
 	private ArrayList<Song> songs = new ArrayList<>();
-	private String albumName;
+	private final String albumName;
 	
+	// main constructor
+	// @pre albumName != ""
 	public Album(String albumName) {
 		this.albumName = albumName;
+	}
+	
+	public Album(Album other) {
+		this.albumName = other.albumName;
+		this.songs = other.getAllSongs(); //copies
 	}
 	
 	public String getAlbumName() {
@@ -33,17 +40,20 @@ public class Album {
 	public Song getCertainSong(String songName) { // used for song by title & song by artist
 		for (Song song : songs) {
 			if (song.getSongName() == songName) {
-				return song;
+				return new Song(song); // returns copy of song
 			}
 		}
 		System.out.println("Error can't find song");
 		return null;
 		
 	}
-//	public ArrayList<Song> getAllSongs() { // used for song by artist 
-//		return this.songs; //TODO: make copy
-//	}
+	public ArrayList<Song> getAllSongs() { // used for song by title 
+		 ArrayList<Song> all = new ArrayList<Song>();
+		 for (Song song : songs) {
+			 all.add(new Song(song)); // returns copy of songs
+		 }
+		 return all;
+	}
 	
 	
 }
-
