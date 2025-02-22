@@ -27,7 +27,7 @@ public class Artist {
 	public Album getCertainAlbum(String albumName) { // used for an album by title
 		for (Album album : this.albums) {
 			if (album.getAlbumName() == albumName) {
-				return new Album(album);
+				return album;
 			}
 		}
 		System.out.println("Album not Found " + albumName + " for Artist: " + this.name);
@@ -35,10 +35,6 @@ public class Artist {
 	}
 	
 	public ArrayList<Album> getAllAlbums() { // used for getting album by artist
-		ArrayList<Album> copy = new ArrayList<>();
-		for (Album album : albums) {
-			copy.add(new Album(album));
-		}
-		return copy;
+		return this.albums;
 	}
 }
