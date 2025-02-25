@@ -5,21 +5,35 @@ import java.util.ArrayList;
 public class Album {
 	private ArrayList<Song> songs = new ArrayList<>();
 	private final String albumName;
+    private final String albumGenre;
+    private final String albumYear;
 	
 	// main constructor
 	// @pre albumName != ""
-	public Album(String albumName) {
+	public Album(String albumName, String albumGenre, String albumYear) {
 		this.albumName = albumName;
+        this.albumGenre = albumGenre;
+        this.albumYear = albumYear;
 	}
 	
 	public Album(Album other) {
 		this.albumName = other.albumName;
-		this.songs = other.getAllSongs(); //copies
+        this.albumGenre = other.albumGenre;
+        this.albumYear = other.albumYear;
+		this.songs = other.getAllSongs();
 	}
 	
 	public String getAlbumName() {
 		return this.albumName;
 	}
+
+    public String getAlbumGenre() {
+        return this.albumGenre;
+    }
+
+    public String getAlbumYear() {
+        return this.albumYear;
+    }
 	
 	public void addSong(String songName) {
 		int seen = 0;
