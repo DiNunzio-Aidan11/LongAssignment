@@ -6,10 +6,11 @@ public class Artist {
 	private final String name;
 	
 	// @pre firstName != "", lastName != ""
-	public Artist(String firstName, String lastName) {
-		this.name = firstName + " " + lastName;
+	public Artist(String Name) {
+		this.name = Name;
 	}
-	public void addAlbum(String albumName) {
+	
+	public void addAlbum(String albumName, String albumGenre, String albumYear ) {
 		int seen = 0;
 		for (Album album : this.albums) {
 			if (album.getAlbumName() == albumName) {
@@ -21,7 +22,7 @@ public class Artist {
 			System.out.println("Error Duplicate Album: " + albumName + " for Artist: " + this.name);
 		}
 		else {
-			albums.add(new Album(albumName));
+			albums.add(new Album(albumName, albumGenre, albumYear, this.name));
 		}
 	}
 	public Album getCertainAlbum(String albumName) { // used for an album by title
@@ -37,4 +38,8 @@ public class Artist {
 	public ArrayList<Album> getAllAlbums() { // used for getting album by artist
 		return this.albums;
 	}
+    
+    public String getArtistName() {
+        return this.name;
+    }
 }
