@@ -60,7 +60,6 @@ public class Album {
 				return new Song(song); // returns copy of song
 			}
 		}
-		System.out.println("Error can't find song");
 		return null;
 		
 	}

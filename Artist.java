@@ -31,7 +31,6 @@ public class Artist {
 				return album;
 			}
 		}
-		System.out.println("Album not Found " + albumName + " for Artist: " + this.name);
 		return null;
 	}
 	
