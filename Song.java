@@ -3,7 +3,7 @@ package model;
 public class Song {
 	private final String songName;
 	private boolean favorite;
-	private int rating;
+	private Rating rating;
 	
 	// main constructor
 	// @pre songName != ""
@@ -22,20 +22,15 @@ public class Song {
 		return this.songName;
 	}
 	
-	public void setRating(int rating) {
-		if (rating < 0 || rating > 5) {
-			System.out.println("invalid rating: " + rating);
-		}
-		else {
-			this.rating = rating;
-		}
+	public void setRating(Rating rating) {
+		this.rating = rating;
 	}
 	
 	public void setFavorite(boolean favorite) {
 		this.favorite = favorite;
 	}
 	
-	public int getRating() {
+	public Rating getRating() {
 		return this.rating;
 	}
 	

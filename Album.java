@@ -7,13 +7,15 @@ public class Album {
 	private final String albumName;
     private final String albumGenre;
     private final String albumYear;
+    private final String artistName;
 	
 	// main constructor
 	// @pre albumName != ""
-	public Album(String albumName, String albumGenre, String albumYear) {
+	public Album(String albumName, String albumGenre, String albumYear, String artistName) {
 		this.albumName = albumName;
         this.albumGenre = albumGenre;
         this.albumYear = albumYear;
+        this.artistName = artistName;
 	}
 	
 	public Album(Album other) {
@@ -21,6 +23,7 @@ public class Album {
         this.albumGenre = other.albumGenre;
         this.albumYear = other.albumYear;
 		this.songs = other.getAllSongs();
+		this.artistName = other.artistName;
 	}
 	
 	public String getAlbumName() {
