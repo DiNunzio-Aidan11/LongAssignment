@@ -8,10 +8,10 @@ import model.Rating;
 import model.Song;
 import model.MusicStore;
 
-public class Viewing {
+public class UI {
 	private ArrayList<PlayList> playLists = new ArrayList<>();
 	
-	public void ui() {
+	public void userInterface() {
 		System.out.println("Commands");
 		
 		
