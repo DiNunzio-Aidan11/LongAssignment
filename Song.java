@@ -1,5 +1,10 @@
 package model;
 
+/*
+ * Class Song 
+ * This class stores the name of the song as well as if it's a favorite and the rating of a song
+ */
+
 public class Song {
 	private final String songName;
 	private boolean favorite;
@@ -23,6 +28,9 @@ public class Song {
 	}
 	
 	public void setRating(Rating rating) {
+		/*
+		 * sets a rating of one star to five star
+		 */
 		this.rating = rating;
 	}
 	
@@ -35,6 +43,7 @@ public class Song {
 	}
 	
 	public boolean isFavorite() {
+		// returns if a song is considered favorite or not
 		return this.favorite;
 	}
 
