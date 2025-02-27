@@ -2,6 +2,11 @@ package model;
 
 import java.util.ArrayList;
 
+/*
+ * Class Album 
+ * This class stores information about the album name genre etc also holding an array list of Song objects
+ */
+
 public class Album {
 	private ArrayList<Song> songs = new ArrayList<>();
 	private final String albumName;
@@ -18,12 +23,13 @@ public class Album {
         this.artistName = artistName;
 	}
 	
+	// copy constructor
 	public Album(Album other) {
 		this.albumName = other.albumName;
         this.albumGenre = other.albumGenre;
         this.albumYear = other.albumYear;
-		this.songs = other.getAllSongs();
-		this.artistName = other.artistName;
+        this.artistName = other.artistName;
+        this.songs = other.getAllSongs(); // is copied so no escaping references
 	}
 	
 	public String getAlbumName() {
@@ -39,6 +45,9 @@ public class Album {
     }
 	
 	public void addSong(String songName) {
+		/*
+		 * Adds a song object given the name of the song 
+		 */
 		int seen = 0;
 		for (Song song : songs) {
 			if (song.getSongName() == songName) {
@@ -54,7 +63,11 @@ public class Album {
 		}
 		
 	}
-	public Song getCertainSong(String songName) { // used for song by title & song by artist
+	public Song getCertainSong(String songName) {
+		/*
+		 * returns a copy of the song object if found in the album otherwise returns null
+		 * used for song by title & song by artist
+		 */
 		for (Song song : songs) {
 			if (song.getSongName() == songName) {
 				return new Song(song); // returns copy of song
@@ -63,7 +76,11 @@ public class Album {
 		return null;
 		
 	}
-	public ArrayList<Song> getAllSongs() { // used for song by title 
+	public ArrayList<Song> getAllSongs() {
+		/*
+		 * returns a copy of all the song objects in an album
+		 * used for song by title 
+		 */
 		 ArrayList<Song> all = new ArrayList<Song>();
 		 for (Song song : songs) {
 			 all.add(new Song(song)); // returns copy of songs
