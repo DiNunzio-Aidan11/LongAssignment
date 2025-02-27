@@ -6,8 +6,17 @@ import java.lang.String;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/*
+ * Class MusicStore 
+ * This class parses album information and processes it into an array list
+ * that store Albums of that artists which albums store songs 
+ */
+
 public class MusicStore {
 	public static int getArtistLocation(ArrayList<Artist> artists, String artistName) {
+		/*
+		 * used for find the index of an artist or -1 if not found
+		 */
 		for (int i = 0; i < artists.size(); i++) {
 			if (artists.get(i).getArtistName().equals(artistName)) {
 				return i;
@@ -17,6 +26,9 @@ public class MusicStore {
 		return -1;
 	}
 	public static ArrayList<Artist> parseAlbumTextFile(String fileName) {
+		/*
+		 * Parses a text file eg. album.txt to store the information into the correct array list
+		 */
 	    ArrayList<Artist> artists = new ArrayList<>();
 	    
 	    try {
