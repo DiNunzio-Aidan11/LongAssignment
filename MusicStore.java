@@ -1,10 +1,10 @@
 package model;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.lang.String;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class MusicStore {
 	public static int getArtistLocation(ArrayList<Artist> artists, String artistName) {
@@ -16,70 +16,45 @@ public class MusicStore {
 		}
 		return -1;
 	}
-
 	public static ArrayList<Artist> parseAlbumTextFile(String fileName) {
+	    ArrayList<Artist> artists = new ArrayList<>();
+	    
+	    try {
+	        File file = new File(fileName);
+	        Scanner scanner = new Scanner(file);  // Using Scanner to read the file
+	        
+	        while (scanner.hasNextLine()) {
+	            String line = scanner.nextLine().strip();
+	            String[] albumAndName = line.split(",");
 
-		ArrayList<Artist> artists = new ArrayList<>();
+	            if (albumAndName.length < 2) {
+	                System.out.println("Skipping invalid line: " + line);
+	                continue;
+	            }
 
-		try {
-			FileReader file = new FileReader(fileName);
-			BufferedReader buffer = new BufferedReader(file);
+	            String albumName = albumAndName[0];
+	            String artistName = albumAndName[1];
 
-			String line = buffer.readLine();
+	            int artistLocation = getArtistLocation(artists, artistName);
+	            Artist artist;
 
-			while (line != null) {
-				String[] albumAndName = line.strip().split(",");
+	            if (artistLocation != -1) {
+	                artist = artists.get(artistLocation);
+	            } else {
+	                artist = new Artist(artistName);
+	                artists.add(artist);
+	            }
 
-				String artistName = albumAndName[1];
-				String albumName = albumAndName[0];
+	            artist.addAlbum(albumName, "Unknown Genre", "Unknown Year"); // Placeholder values
 
-				int artistLocation = getArtistLocation(artists, artistName);
-				Artist artist;
-				if (artistLocation != -1) {
-					artist = artists.get(artistLocation);
-				} else {
-					artist = new Artist(artistName);
-					artists.add(artist);
-				}
+	        }
+	        scanner.close();
+	    } catch (FileNotFoundException e) {
+	        System.err.println("Error: File not found - " + fileName);
+	    }
 
-				String albumFileName = String.format("%s_%s.txt", albumName, artistName);
-
-				try {
-					FileReader albumFile = new FileReader(albumFileName);
-					BufferedReader albumBuffer = new BufferedReader(albumFile);
-
-					String albumLine = albumBuffer.readLine();
-					boolean firstLineReached = false;
-
-					while (albumLine != null) {
-						if (firstLineReached == false) {
-							String[] genreAndYear = albumLine.strip().split(",");
-
-							String albumGenre = genreAndYear[2];
-							String albumYear = genreAndYear[3];
-
-							artist.addAlbum(albumName, albumGenre, albumYear);
-							firstLineReached = true;
-						} else {
-							albumLine = albumLine.strip();
-							artist.getCertainAlbum(albumName).addSong(albumLine);
-						}
-						albumLine = albumBuffer.readLine();
-					}
-					albumBuffer.close();
-				} catch (IOException e) {
-					System.err.println("Error: File is not able to be parsed " + e.getMessage());
-				}
-
-				line = buffer.readLine();
-			}
-			buffer.close();
-		}
-
-		catch (IOException e) {
-			System.err.println("Error: File is not able to be parsed " + e.getMessage());
-		}
-		return artists;
+	    return artists;
 	}
+
 
 }
