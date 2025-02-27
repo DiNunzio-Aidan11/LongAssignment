@@ -7,6 +7,9 @@ import model.MusicStore;
 import view.UI;
 
 public class Main {
+	/*
+	 * First parses in the information to the store then calls for user inputs to process 
+	 */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter Album Text File: ");
@@ -20,11 +23,12 @@ public class Main {
             return;
         }
 
-        ArrayList<Artist> artists = MusicStore.parseAlbumTextFile(fileName);
-        UI userInterface = new UI(artists);
-
-        for (Artist art : artists) {
-            System.out.println(art.getArtistName());
+        ArrayList<Artist> store = MusicStore.parseAlbumTextFile(fileName);
+        
+        // lets the view class have a reference to the stores information 
+        UI userInterface = new UI(store);
+        for (Artist artist : store) {
+            System.out.println(artist.getArtistName());
         }
     }
 }
