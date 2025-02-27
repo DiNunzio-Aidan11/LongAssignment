@@ -1,5 +1,10 @@
 package model;
 import java.util.ArrayList;
+/*
+ * Class Artist 
+ * This class stores the name of the artist object and an array list of album objects
+ */
+
 
 public class Artist {
 	private ArrayList<Album> albums = new ArrayList<>();
@@ -11,6 +16,9 @@ public class Artist {
 	}
 	
 	public void addAlbum(String albumName, String albumGenre, String albumYear ) {
+		/*
+		 * This will add an album object to the artist and add the year, genre, and name of the album
+		 */
 		int seen = 0;
 		for (Album album : this.albums) {
 			if (album.getAlbumName() == albumName) {
@@ -25,17 +33,29 @@ public class Artist {
 			albums.add(new Album(albumName, albumGenre, albumYear, this.name));
 		}
 	}
-	public Album getCertainAlbum(String albumName) { // used for an album by title
+	public Album getCertainAlbum(String albumName) {
+		/*
+		 * checks to see if there is an album and returns copy of it if found otherwise null
+		 * used for an album by title
+		 */
 		for (Album album : this.albums) {
 			if (album.getAlbumName() == albumName) {
-				return album;
+				return new Album(album); // returns a copy of the album
 			}
 		}
 		return null;
 	}
 	
-	public ArrayList<Album> getAllAlbums() { // used for getting album by artist
-		return this.albums;
+	public ArrayList<Album> getAllAlbums() { 
+		/*
+		 * returns a copy of all the album objects that a artist has, empty list if none found
+		 */
+		ArrayList<Album> copy = new ArrayList<>();
+		for (Album album : albums) {
+			copy.add(new Album(album));
+			
+		}
+		return copy;
 	}
     
     public String getArtistName() {
