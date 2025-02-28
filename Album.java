@@ -43,6 +43,10 @@ public class Album {
     public String getAlbumYear() {
         return this.albumYear;
     }
+    
+    public String getArtistName() {
+    	return this.artistName;
+    }
 	
 	public void addSong(String songName) {
 		/*
@@ -59,7 +63,7 @@ public class Album {
 			System.out.println("Error duplicate song: " + songName + " in album: " + this.albumName);
 		}
 		else {
-			songs.add(new Song(songName));
+			songs.add(new Song(songName, this.albumName, this.artistName));
 		}
 		
 	}
@@ -69,8 +73,8 @@ public class Album {
 		 * used for song by title & song by artist
 		 */
 		for (Song song : songs) {
-			if (song.getSongName() == songName) {
-				return new Song(song); // returns copy of song
+			if (song.getSongName().equals(songName)) {
+				return song;
 			}
 		}
 		return null;

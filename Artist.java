@@ -15,13 +15,17 @@ public class Artist {
 		this.name = Name;
 	}
 	
-	public void addAlbum(String albumName, String albumGenre, String albumYear ) {
+	public Artist(Artist other) {
+		this.name = other.name;
+	}
+	
+	public void addAlbum(String albumName, String albumGenre, String albumYear) {
 		/*
 		 * This will add an album object to the artist and add the year, genre, and name of the album
 		 */
 		int seen = 0;
 		for (Album album : this.albums) {
-			if (album.getAlbumName() == albumName) {
+			if (album.getAlbumName().equals(albumName)) {
 				seen = 1;
 				break;
 			}
@@ -39,8 +43,8 @@ public class Artist {
 		 * used for an album by title
 		 */
 		for (Album album : this.albums) {
-			if (album.getAlbumName() == albumName) {
-				return new Album(album); // returns a copy of the album
+			if (album.getAlbumName().equals(albumName)) {
+				return album;
 			}
 		}
 		return null;
@@ -48,12 +52,11 @@ public class Artist {
 	
 	public ArrayList<Album> getAllAlbums() { 
 		/*
-		 * returns a copy of all the album objects that a artist has, empty list if none found
+		 * returns a copy of all albums that an artist has
 		 */
-		ArrayList<Album> copy = new ArrayList<>();
-		for (Album album : albums) {
+		ArrayList<Album> copy = new ArrayList<Album>();
+		for (Album album : this.albums) {
 			copy.add(new Album(album));
-			
 		}
 		return copy;
 	}

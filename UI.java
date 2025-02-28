@@ -1,197 +1,154 @@
 package view;
 
 import java.util.ArrayList;
-
 import model.Album;
 import model.Artist;
-import model.PlayList;
+import model.LibraryModel;
+import model.Playlist;
 import model.Rating;
 import model.Song;
 
 public class UI {
-	private ArrayList<PlayList> playLists;
 	private ArrayList<Artist> store;
-	private ArrayList<Artist> library;
+	private LibraryModel library;
 
 	public UI(ArrayList<Artist> storeObject) {
 		this.store = storeObject;
-	}
-
-	public void userInterface() {
-		System.out.println("Commands");
-		
+		this.library = new LibraryModel();
 	}
 
 	// search for information from the music store
-	public void searchByTitle(String songName, Source a) {
-		// song that is in the database: print the song title, the artist, and the album
-		boolean empty = true;
+	public ArrayList<Song> searchByTitle(String songName) {
+		ArrayList<Song> foundSongs = new ArrayList<>();
 		ArrayList<Artist> database;
-		if (a == Source.STORE) {
-			database = new ArrayList<Artist>(store);
-		} else {
-			database = new ArrayList<Artist>(library);
-		}
-
+		database = new ArrayList<Artist>(store);
 		for (Artist artist : database) {
 			for (Album album : artist.getAllAlbums()) {
 				Song song = album.getCertainSong(songName);
 				if (song != null) {
-					empty = false;
-					System.out.println(songName + ", " + artist.getArtistName() + ", " + album.getAlbumName());
+					foundSongs.add(song);
 				}
 			}
 		}
-		if (empty) {
-			System.out.println("No Song: " + songName + " Found");
-		}
-		System.out.println();
-
+		return foundSongs;
 	}
 
-	public void searchByArtist(String artistName, Source a) {
+	public ArrayList<Song> searchByArtist(String artistName) {
 		// song that is in the database: print the song title, the artist, and the album
-		boolean empty = true;
+		ArrayList<Song> foundSongs = new ArrayList<>();
 		ArrayList<Artist> database;
-		if (a == Source.STORE) {
-			database = new ArrayList<Artist>(store);
-		} else {
-			database = new ArrayList<Artist>(library);
-		}
+		database = new ArrayList<Artist>(store);
 		for (Artist artist : database) {
-			if (artist.getArtistName() == artistName) {
+			if (artist.getArtistName().equals(artistName)) {
 				for (Album album : artist.getAllAlbums()) {
 					for (Song song : album.getAllSongs())
-						System.out.println(song.getSongName() + ", " + artistName + ", " + album.getAlbumName());
-					empty = false;
+						foundSongs.add(song);
 				}
 			}
 		}
-		if (empty) {
-			System.out.println("No Songs by: " + artistName + " Found");
-		}
-		System.out.println();
-
+		return foundSongs;
 	}
 
-	public void searchByAlbumTitle(String albumName, Source a) {
+	public ArrayList<Album> searchByAlbumTitle(String albumName) {
 		// album: print the album information and a list of the songs in the appropriate
 		// order
-		boolean empty = true;
 		ArrayList<Artist> database;
-		if (a == Source.STORE) {
-			database = new ArrayList<Artist>(store);
-		} else {
-			database = new ArrayList<Artist>(library);
-		}
+		ArrayList<Album> foundAlbums = new ArrayList<>();
+		database = new ArrayList<Artist>(store);
 		for (Artist artist : database) {
 			Album album = artist.getCertainAlbum(albumName);
 			if (album != null) {
-				empty = false;
-				System.out.println("Album: " + album.getAlbumName());
-				System.out.println("Artist: " + artist.getArtistName());
-				System.out.println("Released: " + album.getAlbumYear());
-				System.out.println("Genre: " + album.getAlbumGenre());
-				System.out.println("Songs:");
-				for (Song song : album.getAllSongs()) {
-					System.out.println("\t" + song.getSongName());
-				}
-				System.out.println();
+				foundAlbums.add(album);
 			}
 		}
-		if (empty) {
-			System.out.println("No album: " + albumName + " found");
-		}
-		System.out.println();
-
+		return foundAlbums;
 	}
 
-	public void searchByAlbumArtist(String artistName, Source a) {
-		// album: print the album information and a list of the songs in the appropriate
-		// order
-
-		boolean empty = true;
+	public ArrayList<Album> searchByAlbumArtist(String artistName) {
 		ArrayList<Artist> database;
-		if (a == Source.STORE) {
-			database = new ArrayList<Artist>(store);
-		} else {
-			database = new ArrayList<Artist>(library);
-		}
+		ArrayList<Album> foundAlbums = new ArrayList<>();
+		database = new ArrayList<Artist>(store);
 		for (Artist artist : database) {
-			if (artist.getArtistName() == artistName) {
+			if (artist.getArtistName().equals(artistName)) {
 				for (Album album : artist.getAllAlbums()) {
-					empty = false;
-					System.out.println("Album: " + album.getAlbumName());
-					System.out.println("Artist: " + artist.getArtistName());
-					System.out.println("Released: " + album.getAlbumYear());
-					System.out.println("Genre: " + album.getAlbumGenre());
-					System.out.println("Songs:");
-					for (Song song : album.getAllSongs()) {
-						System.out.println("\t" + song.getSongName());
-					}
-					System.out.println();
+					foundAlbums.add(album);
 				}
-
 			}
 		}
-
-		if (empty) {
-			System.out.println("No albums found for: " + artistName);
+		return foundAlbums;
+	}
+	
+	public Artist searchArtistFromSong (String artistName) {
+		for (Artist artist : store) {
+			if (artist.getArtistName().equals(artistName)) {
+				return artist;
+			}
 		}
-		System.out.println();
-
+		return null;
+	}
+	
+	public Artist searchArtistFromAlbum (String artistName) {
+		for (Artist artist : store) {
+			if (artist.getArtistName().equals(artistName)) {
+				return artist;
+			}
+		}
+		return null;
 	}
 
 	// add something to the library
-	public boolean addSongToLibrary(Song toBeAdded) {
-		return true;
+	public void addSongToLibrary(Song toBeAdded) {
+		this.library.addSong(toBeAdded);
 	}
 
-	public boolean addAlbumToLibrary(Album toBeAdded) {
-		return true;
+	public void addAlbumToLibrary(Album toBeAdded) {
+		this.library.addAlbum(toBeAdded);
+	}
+	
+	public void addArtistToLibrary(Artist artist) {
+		this.library.addArtist(artist);
 	}
 
 	// get a list of items from the library
-	public ArrayList<String> getLibrarySongTitles() {
-		// for all songs in library call search by title
-		return null;
+	public ArrayList<Song> getLibrarySongs() {
+		return library.getLibrarySongs();
 	}
 
 	public ArrayList<Artist> getLibraryArtists() {
-		return null;
+		return library.getLibraryArtists();
 
 	}
 
-	public ArrayList<Album> getLibraryAlbum() {
-		return null;
-
+	public ArrayList<Album> getLibraryAlbums() {
+		return library.getLibraryAlbums();
 	}
 
-	public ArrayList<PlayList> getLibraryPlaylists() {
-		return null;
+	public ArrayList<Playlist> getLibraryPlaylists() {
+		return library.getLibraryPlaylists();
 
 	}
 
 	public ArrayList<Song> getLibraryFavorites() {
-		return null;
+		return library.getLibraryFavorites();
 
 	}
 
-	public boolean createPlayList(String playListName) {
-		return true;
+	public void createPlaylist(String playlistName) {
+		library.addPlaylist(playlistName);
 	}
 
-	public boolean addToPlayList(String playListName) {
-		return true;
+	public void addToPlaylist(Song song, Playlist playlist) {
+		library.addSongToPlaylist(song, playlist);
 	}
 
-	public boolean removeFromPlayList(String playListName) {
-		return true;
+	public void removeFromPlaylist(Song song, Playlist playlist) {
+		library.removeSongFromPlaylist(song, playlist);
 	}
 
 	public void rateSong(Song a, Rating r) {
 		if (r == Rating.FIVESTAR) {
 			a.setFavorite(true);
+			this.library.addToFavorites(a);
 		}
 		a.setRating(r);
 	}

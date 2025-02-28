@@ -7,13 +7,17 @@ package model;
 
 public class Song {
 	private final String songName;
+	private final String artistName;
+	private final String albumName;
 	private boolean favorite;
 	private Rating rating;
 	
 	// main constructor
 	// @pre songName != ""
-	public Song(String songName) {
+	public Song(String songName, String albumName, String artistName) {
 		this.songName = songName;
+		this.albumName = albumName;
+		this.artistName = artistName;
 	}
 	
 	// copy constructor
@@ -21,6 +25,8 @@ public class Song {
 		this.songName = other.songName;
 		this.favorite = other.favorite;
 		this.rating = other.rating;
+		this.artistName = other.artistName;
+		this.albumName = other.albumName;
 		}
 	
 	public String getSongName() {
@@ -45,6 +51,14 @@ public class Song {
 	public boolean isFavorite() {
 		// returns if a song is considered favorite or not
 		return this.favorite;
+	}
+	
+	public String getArtistName() {
+		return this.artistName;
+	}
+	
+	public String getAlbumName() {
+		return this.albumName;
 	}
 
 }
