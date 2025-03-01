@@ -416,7 +416,7 @@ public class Main {
         		}
         		else if (input.equals("l")) {
         			for (Song song : userInterface.getLibrarySongs()) {
-        				System.out.println(song);
+        				System.out.println(song.getSongName());
         			}
         		}
         		else if (input.equals("m")) {
