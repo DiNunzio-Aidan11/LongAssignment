@@ -86,7 +86,7 @@ public class Main {
 		    				System.out.println("Artist: " + album.getArtistName());
 		    				System.out.println("Released: " + album.getAlbumYear());
 		    				System.out.println("Genre: " + album.getAlbumGenre());
-		    				System.out.println("Songs:" + "\n");
+		    				System.out.println("Songs:");
 		    				for (Song song : album.getAllSongs()) {
 		    					System.out.println("\t" + song.getSongName());
 		    				}
@@ -137,7 +137,12 @@ public class Main {
         		System.out.println("Input 'i: select playlist");
         		System.out.println("Input 'j': delete song from playlist");
         		System.out.println("Input 'k': add song to playlist");
-        		System.out.println("Input 'l': switch to store");
+        		System.out.println("Input l: list songs in library");
+	        	System.out.println("Input 'm': search for songs by title");
+	        	System.out.println("Input 'n': search for songs by artist");
+	        	System.out.println("Input 'o': search for album by title");
+	        	System.out.println("Input 'p': search for album by artist");
+        		System.out.println("Input 'q': switch to store");
         		System.out.println("Input 'exit': leave application");
         		
         		String input = scanner.nextLine();
@@ -372,9 +377,9 @@ public class Main {
         				if (playlist.getPlaylistName().equals(input)) {
         					System.out.println("Enter song you wish to add to playlist");
         					input = scanner.nextLine();
-        					ArrayList<Song> foundSongs = userInterface.searchByTitle(input);
+        					ArrayList<Song> foundSongs = userInterface.getLibrarySongs();
                 			if (foundSongs.size() == 0) {
-                				System.out.println("Album does not exist in store");
+                				System.out.println("Song is not in library");
                 			}
                 			else if (foundSongs.size() > 1) {
                 				boolean songSelected = false;
@@ -403,11 +408,90 @@ public class Main {
         				}
         			}
         		}
-        		else if (input.equals("l")) {
+        		else if (input.equals("q")) {
         			storeMode = true;
         		}
         		else if (input.equals("exit")) {
         			exitFlag = true;
+        		}
+        		else if (input.equals("l")) {
+        			for (Song song : userInterface.getLibrarySongs()) {
+        				System.out.println(song);
+        			}
+        		}
+        		else if (input.equals("m")) {
+        			ArrayList<Song> songs = new ArrayList<>();
+        			System.out.println("Insert song title");
+        			input = scanner.nextLine();
+        			for (Song song : userInterface.getLibrarySongs()) {
+        				if (song.getSongName().equals(input)) {
+        					songs.add(song);
+        				}
+        			}
+        			if (songs.size() == 0) {
+        				System.out.println("Song does not exits in library");
+        			}
+        			else {
+	        			for (Song song1 : songs) {
+	        				System.out.println(song1.getSongName() + ", " + song1.getArtistName() + ", " + song1.getAlbumName());
+	        			}
+        			}
+        		}
+        		else if (input.equals("n")) {
+        			System.out.println("Insert artist name");
+        			input = scanner.nextLine();
+        			boolean found = false;
+        			for (Song song : userInterface.getLibrarySongs()) {
+        				if (song.getArtistName().equals(input)) {
+        					found = true;
+        					System.out.println(song.getSongName() + ", " + song.getArtistName() + ", " + song.getAlbumName());
+        				}
+        			}
+        			if (found == false) {
+        				System.out.println("Artist has no songs in library");
+        			}
+        		}
+        		else if (input.equals("o")) {
+        			System.out.println("Insert album title");
+        			input = scanner.nextLine();
+        			boolean found = false;
+        			for (Album album : userInterface.getLibraryAlbums()) {
+        				if (album.getAlbumName().equals(input)) {
+        					found = true;
+		    				System.out.println("Album: " + album.getAlbumName());
+		    				System.out.println("Artist: " + album.getArtistName());
+		    				System.out.println("Released: " + album.getAlbumYear());
+		    				System.out.println("Genre: " + album.getAlbumGenre());
+		    				System.out.println("Songs:");
+		    				for (Song song : album.getAllSongs()) {
+		    					System.out.println("\t" + song.getSongName());
+		    				}
+        				}
+        			}
+        			if (found == false) {
+        				System.out.println("Album does not exist within library");
+        			}
+        		}
+        		else if (input.equals("p")) {
+        			System.out.println("Insert artist name");
+        			input = scanner.nextLine();
+        			boolean found = false;
+        			for (Album album : userInterface.getLibraryAlbums()) {
+        				if (album.getArtistName().equals(input)) {
+        					found = true;
+		    				System.out.println("Album: " + album.getAlbumName());
+		    				System.out.println("Artist: " + album.getArtistName());
+		    				System.out.println("Released: " + album.getAlbumYear());
+		    				System.out.println("Genre: " + album.getAlbumGenre());
+		    				System.out.println("Songs:");
+		    				for (Song song : album.getAllSongs()) {
+		    					System.out.println("\t" + song.getSongName());
+		    				}
+        				}
+        			}
+        			if (found == false) {
+        				System.out.print("Artist does not have any albums in library");
+        			}
         		}
         		else {
 	        		System.out.println("Invalid input selected: try again");
