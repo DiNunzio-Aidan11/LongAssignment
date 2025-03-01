@@ -2,32 +2,30 @@ package model;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.lang.String;
-import java.util.Scanner;
 import java.io.IOException;
+import java.lang.String;
 import java.util.ArrayList;
 
+/*
+ * Class MusicStore 
+ * This class parses album information and processes it into an array list
+ * that store Albums of that store which albums store songs 
+ */
+
 public class MusicStore {
+	public static int getArtistLocation(ArrayList<Artist> store, String artistName) {
+		/*
+		 * used for find the index of an artist or -1 if not found
+		 */
+		for (int i = 0; i < store.size(); i++) {
+			if (store.get(i).getArtistName().equals(artistName)) {
+				return i;
 
-	public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter Album Text File");
-        String fileName = scanner.nextLine();
-        scanner.close();
-        ArrayList<Artist> artists = parseAlbumTextFile(fileName);
-        System.out.println(artists);
+			}
+		}
+		return -1;
 	}
-
-    public static int getArtistLocation(ArrayList<Artist> artists, String artistName) {
-        for (int i = 0; i < artists.size(); i++) {
-            if (artists.get(i).getArtistName().equals(artistName)) {
-                return i;
-
-            }
-        }
-        return -1;
-    }
-
+	
     public static ArrayList<Artist> parseAlbumTextFile(String fileName) {
 
         ArrayList<Artist> artists = new ArrayList<>();
@@ -66,10 +64,10 @@ public class MusicStore {
                     while (albumLine != null) {
                         if (firstLineReached == false) {
                             String[] genreAndYear = albumLine.strip().split(",");
-
+                            
                             String albumGenre = genreAndYear[2];
                             String albumYear = genreAndYear[3];
-
+                            
                             artist.addAlbum(albumName, albumGenre, albumYear);
                             firstLineReached = true;
                         }
@@ -95,6 +93,4 @@ public class MusicStore {
         }
         return artists;
     }
-
 }
-
