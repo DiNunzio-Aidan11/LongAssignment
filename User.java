@@ -9,5 +9,18 @@ public class User extends LibraryModel {
         this.username = username;
         this.password = password;
     }
-    // add in methods    
+
+	public String getPassword() {
+		return password;
+	}
+	
+	public String getUsername() {
+		return username;
+	}
+	
+	public void saveToDatabase() {
+		// TODO: saves to file
+	}
+    
+    
 }

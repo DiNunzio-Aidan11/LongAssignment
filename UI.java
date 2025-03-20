@@ -7,14 +7,14 @@ import model.LibraryModel;
 import model.Playlist;
 import model.Rating;
 import model.Song;
+import model.User;
 
 public class UI {
 	private ArrayList<Artist> store;
-	private LibraryModel library;
+	private User user;
 
 	public UI(ArrayList<Artist> storeObject) {
 		this.store = storeObject;
-		this.library = new LibraryModel();
 	}
 
 	// search for information from the music store
@@ -96,59 +96,69 @@ public class UI {
 		return null;
 	}
 
-	// add something to the library
+	// add something to the user library
 	public void addSongToLibrary(Song toBeAdded) {
-		this.library.addSong(toBeAdded);
+		this.user.addSong(toBeAdded);
 	}
 
 	public void addAlbumToLibrary(Album toBeAdded) {
-		this.library.addAlbum(toBeAdded);
+		this.user.addAlbum(toBeAdded);
 	}
 	
 	public void addArtistToLibrary(Artist artist) {
-		this.library.addArtist(artist);
+		this.user.addArtist(artist);
 	}
 
 	// get a list of items from the library
 	public ArrayList<Song> getLibrarySongs() {
-		return library.getLibrarySongs();
+		return this.user.getLibrarySongs();
 	}
 
 	public ArrayList<Artist> getLibraryArtists() {
-		return library.getLibraryArtists();
+		return this.user.getLibraryArtists();
 
 	}
 
 	public ArrayList<Album> getLibraryAlbums() {
-		return library.getLibraryAlbums();
+		return this.user.getLibraryAlbums();
 	}
 
 	public ArrayList<Playlist> getLibraryPlaylists() {
-		return library.getLibraryPlaylists();
+		return this.user.getLibraryPlaylists();
 
 	}
 
 	public ArrayList<Song> getLibraryFavorites() {
-		return library.getLibraryFavorites();
+		return this.user.getLibraryFavorites();
 
 	}
 
 	public void createPlaylist(String playlistName) {
-		library.addPlaylist(playlistName);
+		this.user.addPlaylist(playlistName);
 	}
 
 	public void addToPlaylist(Song song, Playlist playlist) {
-		library.addSongToPlaylist(song, playlist);
+		this.user.addSongToPlaylist(song, playlist);
 	}
 
 	public void removeFromPlaylist(Song song, Playlist playlist) {
-		library.removeSongFromPlaylist(song, playlist);
+		this.user.removeSongFromPlaylist(song, playlist);
+	}
+	
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
+	public void saveChanges() {
+		// userSaveChanges()... 
 	}
 
+	
+	//TODO: LOOK INTO THIS
 	public void rateSong(Song a, Rating r) {
 		if (r == Rating.FIVESTAR) {
 			a.setFavorite(true);
-			this.library.addToFavorites(a);
+			this.user.addToFavorites(a);
 		}
 		a.setRating(r);
 	}

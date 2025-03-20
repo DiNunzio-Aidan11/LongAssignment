@@ -7,8 +7,11 @@ import model.Album;
 import model.Artist;
 import model.MusicStore;
 import model.Playlist;
+import model.Password;
 import model.Rating;
 import model.Song;
+import model.User;
+import model.Users;
 import view.UI;
 
 public class Main {
@@ -17,25 +20,89 @@ public class Main {
 	 */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter Album Text File: ");
-        String fileName = scanner.nextLine();
+        //System.out.println("Enter Album Text File: ");
+        //String fileName = scanner.nextLine();
 
-        File file = new File(fileName); // Create a File object
+        File file = new File("albums.txt"); 
         
         if (!file.exists()) {  // Check if file exists before proceeding
             System.out.println("Error: File not found!");
             return;
         }
 
-        ArrayList<Artist> store = MusicStore.parseAlbumTextFile(fileName);
+        ArrayList<Artist> store = MusicStore.parseAlbumTextFile("albums.txt");
         
         // lets the view class have a reference to the stores information 
         UI userInterface = new UI(store);
         
         boolean storeMode = true;
-        boolean exitFlag = false;
+        boolean loggedIn = false;
         
-        while (exitFlag == false) {
+        
+        //TODO: add in stored information for users from other file
+        Users users = new Users();
+        User curUser;
+        while (true) {
+        	while (!loggedIn) {
+                System.out.println("Welcome! Please Choose an Option:");
+                System.out.println("Input '1': Log in");
+                System.out.println("Input '2': Register User");
+                System.out.println("Input '3': To Quit");
+                String choice = scanner.nextLine();
+
+                if (choice.equals("1")) {
+                    System.out.print("Enter username: ");
+                    String username = scanner.nextLine();
+                    if (users.userExists(username)) {
+                    	System.out.print("Enter password: ");
+                    	String password = scanner.nextLine();
+                    	password = Password.encrypt(password);
+                    
+                    	if (users.authenticate(username, password)) {
+                    		System.out.println("Login successful! Welcome, " + username);
+                    		loggedIn = true;
+                    		curUser = users.getUser(username);
+                    		userInterface.setUser(curUser);
+                    	} 
+                    	else {
+                    		System.out.println("Invalid credentials, try again.");
+                    	}
+                    }
+                    else {
+                    	System.out.print("User does not exist");
+                    }
+                } 
+                else if (choice.equals("2")) {
+                	String username = "";
+                	boolean uniqueUser = false;
+                	while (!uniqueUser) {
+                		System.out.print("Choose a username: ");
+                		username = scanner.nextLine();
+                		if (username.length() == 0) {
+                			System.out.println("Cant have blank username");
+                		}
+                		else if (users.userExists(username)) {
+                			System.out.println("username already taken");
+                		}
+                		else {
+                			uniqueUser = true;
+                		}
+                	}
+                    System.out.print("Choose a password: ");
+                    String password = scanner.nextLine();
+                    password = Password.encrypt(password);
+                    
+                    if (users.addUser(username, password)) {
+                        System.out.println("You can now log in.");
+                    }
+                }
+                else if (choice.equals("3")) {
+                	break;
+                }
+                else {
+                    System.out.println("Invalid option, try again.");
+                }
+            }
         	if (storeMode == true) {
 	        	System.out.println("========== store ===========");
 	        	System.out.println("Input 'a': search for songs by title");
@@ -43,7 +110,7 @@ public class Main {
 	        	System.out.println("Input 'c': search for album by title");
 	        	System.out.println("Input 'd': search for album by artist");
 	        	System.out.println("Input 'e': switch to library");
-	        	System.out.println("Input 'exit': leave application");
+	        	System.out.println("Input 'logout': to logout");
 	        	System.out.println();
 	        	
 	        	String input = scanner.nextLine();
@@ -86,7 +153,7 @@ public class Main {
 		    				System.out.println("Artist: " + album.getArtistName());
 		    				System.out.println("Released: " + album.getAlbumYear());
 		    				System.out.println("Genre: " + album.getAlbumGenre());
-		    				System.out.println("Songs:" + "\n");
+		    				System.out.println("Songs:");
 		    				for (Song song : album.getAllSongs()) {
 		    					System.out.println("\t" + song.getSongName());
 		    				}
@@ -116,8 +183,8 @@ public class Main {
 	        	else if (input.equals("e")) {
 	        		storeMode = false;
 	        	}
-	        	else if (input.equals("exit")) {
-	        		exitFlag = true;
+	        	else if (input.equals("logout")) {
+	        		loggedIn = false;
 	        	}
 	        	else {
 	        		System.out.println("Invalid input selected: try again");
@@ -137,8 +204,13 @@ public class Main {
         		System.out.println("Input 'i: select playlist");
         		System.out.println("Input 'j': delete song from playlist");
         		System.out.println("Input 'k': add song to playlist");
-        		System.out.println("Input 'l': switch to store");
-        		System.out.println("Input 'exit': leave application");
+        		System.out.println("Input l: list songs in library");
+	        	System.out.println("Input 'm': search for songs by title");
+	        	System.out.println("Input 'n': search for songs by artist");
+	        	System.out.println("Input 'o': search for album by title");
+	        	System.out.println("Input 'p': search for album by artist");
+        		System.out.println("Input 'q': switch to store");
+        		System.out.println("Input 'logout': to logout");
         		
         		String input = scanner.nextLine();
         		if (input.equals("a")) {
@@ -372,9 +444,9 @@ public class Main {
         				if (playlist.getPlaylistName().equals(input)) {
         					System.out.println("Enter song you wish to add to playlist");
         					input = scanner.nextLine();
-        					ArrayList<Song> foundSongs = userInterface.searchByTitle(input);
+        					ArrayList<Song> foundSongs = userInterface.getLibrarySongs();
                 			if (foundSongs.size() == 0) {
-                				System.out.println("Album does not exist in store");
+                				System.out.println("Song is not in library");
                 			}
                 			else if (foundSongs.size() > 1) {
                 				boolean songSelected = false;
@@ -403,11 +475,90 @@ public class Main {
         				}
         			}
         		}
-        		else if (input.equals("l")) {
+        		else if (input.equals("q")) {
         			storeMode = true;
         		}
-        		else if (input.equals("exit")) {
-        			exitFlag = true;
+        		else if (input.equals("logout")) {
+        			loggedIn = false;
+        		}
+        		else if (input.equals("l")) {
+        			for (Song song : userInterface.getLibrarySongs()) {
+        				System.out.println(song.getSongName());
+        			}
+        		}
+        		else if (input.equals("m")) {
+        			ArrayList<Song> songs = new ArrayList<>();
+        			System.out.println("Insert song title");
+        			input = scanner.nextLine();
+        			for (Song song : userInterface.getLibrarySongs()) {
+        				if (song.getSongName().equals(input)) {
+        					songs.add(song);
+        				}
+        			}
+        			if (songs.size() == 0) {
+        				System.out.println("Song does not exits in library");
+        			}
+        			else {
+	        			for (Song song1 : songs) {
+	        				System.out.println(song1.getSongName() + ", " + song1.getArtistName() + ", " + song1.getAlbumName());
+	        			}
+        			}
+        		}
+        		else if (input.equals("n")) {
+        			System.out.println("Insert artist name");
+        			input = scanner.nextLine();
+        			boolean found = false;
+        			for (Song song : userInterface.getLibrarySongs()) {
+        				if (song.getArtistName().equals(input)) {
+        					found = true;
+        					System.out.println(song.getSongName() + ", " + song.getArtistName() + ", " + song.getAlbumName());
+        				}
+        			}
+        			if (found == false) {
+        				System.out.println("Artist has no songs in library");
+        			}
+        		}
+        		else if (input.equals("o")) {
+        			System.out.println("Insert album title");
+        			input = scanner.nextLine();
+        			boolean found = false;
+        			for (Album album : userInterface.getLibraryAlbums()) {
+        				if (album.getAlbumName().equals(input)) {
+        					found = true;
+		    				System.out.println("Album: " + album.getAlbumName());
+		    				System.out.println("Artist: " + album.getArtistName());
+		    				System.out.println("Released: " + album.getAlbumYear());
+		    				System.out.println("Genre: " + album.getAlbumGenre());
+		    				System.out.println("Songs:");
+		    				for (Song song : album.getAllSongs()) {
+		    					System.out.println("\t" + song.getSongName());
+		    				}
+        				}
+        			}
+        			if (found == false) {
+        				System.out.println("Album does not exist within library");
+        			}
+        		}
+        		else if (input.equals("p")) {
+        			System.out.println("Insert artist name");
+        			input = scanner.nextLine();
+        			boolean found = false;
+        			for (Album album : userInterface.getLibraryAlbums()) {
+        				if (album.getArtistName().equals(input)) {
+        					found = true;
+		    				System.out.println("Album: " + album.getAlbumName());
+		    				System.out.println("Artist: " + album.getArtistName());
+		    				System.out.println("Released: " + album.getAlbumYear());
+		    				System.out.println("Genre: " + album.getAlbumGenre());
+		    				System.out.println("Songs:");
+		    				for (Song song : album.getAllSongs()) {
+		    					System.out.println("\t" + song.getSongName());
+		    				}
+        				}
+        			}
+        			if (found == false) {
+        				System.out.print("Artist does not have any albums in library");
+        			}
         		}
         		else {
 	        		System.out.println("Invalid input selected: try again");
@@ -417,3 +568,4 @@ public class Main {
         }
     }
 }
+
