@@ -51,7 +51,6 @@ public class LibraryModel {
 			}
 		}
 		if (seen) {
-			System.out.println("cant have duplicate song in library");
 			return;
 		}
 		
@@ -71,7 +70,6 @@ public class LibraryModel {
 			}
 		}
 		if (seen) {
-			System.out.println("cant have duplicate album");
 			return;
 		}
 		this.albums.add(album);
@@ -87,7 +85,6 @@ public class LibraryModel {
 			}
 		}
 		if (seen) {
-			System.out.println("cant have duplicate author");
 			return;
 		}
 		this.artists.add(artist);
@@ -137,7 +134,6 @@ public class LibraryModel {
 				seen = true;
 			}
 			if (seen) {
-				System.out.println("cant have duplicate song in favorites");
 				return;
 			}
 		}
@@ -160,6 +156,11 @@ public class LibraryModel {
 			copy.add(new Song(song));
 		}
 		return copy;
+	}
+	
+	public void setLibrarySongs(ArrayList<Song> songs) {
+		// allows for shuffle 
+		this.songs = songs;
 	}
 	
 	public ArrayList<Album> getLibraryAlbums() {

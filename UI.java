@@ -149,15 +149,16 @@ public class UI {
 		this.user = user;
 	}
 	
+	public void shuffleSongs() {
+		this.user.shuffle();
+	}
+	
 	public void saveChanges() {
 		// userSaveChanges()... 
 	}
 
-	
-	//TODO: LOOK INTO THIS
 	public void rateSong(Song a, Rating r) {
 		if (r == Rating.FIVESTAR) {
-			a.setFavorite(true);
 			this.user.addToFavorites(a);
 		}
 		a.setRating(r);
