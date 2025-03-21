@@ -80,6 +80,17 @@ public class Album {
 		return null;
 		
 	}
+	public boolean songInAlbum(Song song) {
+		// returns if the song object is in the album
+		for (Song allsongs : songs) {
+			if (song.equals(allsongs)) {
+				return true;
+			}
+			
+		}
+		return false;
+		
+	}
 	public ArrayList<Song> getAllSongs() {
 		/*
 		 * returns a copy of all the song objects in an album

@@ -212,6 +212,8 @@ public class Main {
         		System.out.println("Input 'q': switch to store");
         		System.out.println("Input 'r': all songs in library in sorted order");
         		System.out.println("Input 's': shuffle all songs in library");
+        		System.out.println("Input 't': remove song from library");
+        		System.out.println("Input 'u': remove album from library");
         		System.out.println("Input 'logout': to logout");
         		
         		String input = scanner.nextLine();
@@ -628,6 +630,70 @@ public class Main {
         		else if (input.equals("s")) {
         			System.out.println("shuffled songs");
         			userInterface.shuffleSongs();
+        		}
+        		else if (input.equals("t")) {
+        			System.out.print("Enter the name of the song you want to remove: ");
+        			input = scanner.nextLine();
+        			ArrayList<Song> foundSongs = new ArrayList<>();
+        			for (Song song : userInterface.getLibrarySongs()) {
+        				if (song.getSongName().equals(input)) {
+        					foundSongs.add(song);
+        				}
+        			}
+        			if (foundSongs.size() == 0) {
+        				System.out.println("Song not in library");
+        			}
+        			else if (foundSongs.size() != 1){
+        				System.out.println("From which artist: ");
+        				for (int i = 0; i < foundSongs.size(); i++) {
+        					System.out.println(foundSongs.get(i).getArtistName());
+        				}
+        				input = scanner.nextLine();
+        				for (int i = 0; i < foundSongs.size(); i++) {
+        					if (foundSongs.get(i).getArtistName().equals(input)) {
+        						userInterface.removeSong(foundSongs.get(i));
+        						System.out.println("Succesfully removed song");
+        						break;
+        					}
+        				}	
+        			}
+        			else {
+        				userInterface.removeSong(foundSongs.get(0));
+        				System.out.println("Succesfully removed song");
+        			}
+        			
+        		}
+        		else if (input.equals("u")) {
+        			System.out.print("Enter the name of the album you want to remove: ");
+        			input = scanner.nextLine();
+        			ArrayList<Album> foundAlbum = new ArrayList<>();
+        			for (Album album : userInterface.getLibraryAlbums()) {
+        				if (album.getAlbumName().equals(input)) {
+        					foundAlbum.add(album);
+        				}
+        			}
+        			if (foundAlbum.size() == 0) {
+        				System.out.println("Album not in library");
+        			}
+        			else if (foundAlbum.size() != 1){
+        				System.out.println("From which artist: ");
+        				for (int i = 0; i < foundAlbum.size(); i++) {
+        					System.out.println(foundAlbum.get(i).getArtistName());
+        				}
+        				input = scanner.nextLine();
+        				for (int i = 0; i < foundAlbum.size(); i++) {
+        					if (foundAlbum.get(i).getArtistName().equals(input)) {
+        						userInterface.removeAlbum(foundAlbum.get(i));
+        						System.out.println("Succesfully removed album");
+        						break;
+        					}
+        				}	
+        			}
+        			else {
+        				userInterface.removeAlbum(foundAlbum.get(0));
+        				System.out.println("Succesfully removed album");
+        			}
+        			
         		}
         		else {
 	        		System.out.println("Invalid input selected: try again");

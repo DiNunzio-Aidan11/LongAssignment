@@ -60,5 +60,16 @@ public class Song {
 	public String getAlbumName() {
 		return this.albumName;
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+	    if (other == null || getClass() != other.getClass()) {
+	        return false; // Null or different class -> not equal
+	    }
+
+	    Song song = (Song) other;
+		return this.getArtistName().equals(song.getArtistName()) && this.getSongName().equals(song.getSongName()) && 
+				this.getAlbumName().equals(song.getAlbumName());
+	}
 
 }
