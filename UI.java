@@ -145,6 +145,14 @@ public class UI {
 		this.user.removeSongFromPlaylist(song, playlist);
 	}
 	
+	public void removeSong(Song song) {
+		this.user.removeSong(song);
+	}
+	
+	public void removeAlbum(Album album) {
+		this.user.removeAlbum(album);
+	}
+	
 	public void setUser(User user) {
 		this.user = user;
 	}

@@ -193,162 +193,324 @@ public class Main {
         	}
         	else {
         		System.out.println("========== library ==========");
-        		System.out.println("Input 'a': add playlist");
-        		System.out.println("Input 'b': add song to library");
-        		System.out.println("Input 'c': add album to library");
-        		System.out.println("Input 'd': list artists");
-        		System.out.println("Input 'e': list albums");
-        		System.out.println("Input 'f': list playlists");
-        		System.out.println("Input 'g': list favorites");
-        		System.out.println("Input 'h': rate song");
-        		System.out.println("Input 'i': select playlist");
-        		System.out.println("Input 'j': delete song from playlist");
-        		System.out.println("Input 'k': add song to playlist");
-        		System.out.println("Input 'l': list songs in library");
-	        	System.out.println("Input 'm': search for songs by title");
-	        	System.out.println("Input 'n': search for songs by artist");
-	        	System.out.println("Input 'o': search for album by title");
-	        	System.out.println("Input 'p': search for album by artist");
-        		System.out.println("Input 'q': switch to store");
-        		System.out.println("Input 'r': all songs in library in sorted order");
-        		System.out.println("Input 's': shuffle all songs in library");
-        		System.out.println("Input 't': remove song from library");
-        		System.out.println("Input 'u': remove album from library");
+        		System.out.println("Input 'a': To add song/album/playlist to library");
+        		System.out.println("Input 'b': list artists/album/playlists/favorites/songs");
+        		System.out.println("Input 'c': search for songs by title/artist/albumn/genre");
+        		System.out.println("Input 'd': print all songs in library in sorted order");
+        		System.out.println("Input 'e': shuffle all songs in library");
+        		System.out.println("Input 'f': rate song");
+        		System.out.println("Input 'g': add song to playlist");
+        		System.out.println("Input 'h': delete song from playlist");
+        		System.out.println("Input 'i': view playlist");
+        		System.out.println("Input 'j': remove song from library");
+        		System.out.println("Input 'k': remove album from library");
+        		System.out.println("Input 'l': switch to store");
         		System.out.println("Input 'logout': to logout");
         		
         		String input = scanner.nextLine();
         		if (input.equals("a")) {
-        			System.out.println("Enter playlist name");
+        			System.out.println("Input 'a': add playlist");
+        			System.out.println("Input 'b': add song to library");
+        			System.out.println("Input 'c': add album to library");
         			input = scanner.nextLine();
-        			userInterface.createPlaylist(input);
-        			String format = String.format("Playlist %s added to library", input);
-        			System.out.println(format);
+        			if (input.equals("a")) {
+            			System.out.println("Enter playlist name");
+            			input = scanner.nextLine();
+            			userInterface.createPlaylist(input);
+            			String format = String.format("Playlist %s added to library", input);
+            			System.out.println(format);
+        				
+        			}
+            		else if (input.equals("b")) {
+            			System.out.println("Input song to add to library");
+            			input = scanner.nextLine();
+    	        		ArrayList<Song> foundSongs = userInterface.searchByTitle(input);
+    	        		if (foundSongs.size() == 0) {
+    	        			System.out.println("Song does not exist in store");
+    	        		}
+            			else if (foundSongs.size() > 1) {
+            				boolean albumSelected = false;
+            				while (albumSelected == false) {
+    	        				System.out.println("Enter artist of desired song");
+    	        				for (Song song : foundSongs) {
+    	        					System.out.println(song.getArtistName());
+    	        				}
+    	        				input = scanner.nextLine();
+    	        				for (Song song1 : foundSongs) {
+    	        					if (song1.getArtistName().equals(input)) {
+    	        						userInterface.addSongToLibrary(song1);
+    	        						String format = String.format("%s added to library", song1.getSongName());
+    	        						System.out.println(format);
+    	        						albumSelected = true;
+    	        						Artist songArtist = userInterface.searchArtistFromSong(song1.getArtistName());
+    	        						
+    	        						if (!userInterface.getLibraryArtists().contains(songArtist) && songArtist != null) {
+    	        							userInterface.addArtistToLibrary(songArtist);
+    	        							albumSelected = true;
+    	        						}
+    	        						ArrayList<Album> albums = songArtist.getAllAlbums();
+    	        						for (Album album : albums) {
+    	        							if (album.getCertainSong(input) != null) {
+    	        								userInterface.addAlbumToLibrary(album);
+    	        								break;
+    	        							}
+    	        						}
+    	        					}
+    	        				}
+            				}
+            			}
+            			else {
+            				Song ourSong = foundSongs.get(0);
+            				userInterface.addSongToLibrary(ourSong);
+    						Artist songArtist = userInterface.searchArtistFromAlbum(ourSong.getArtistName());
+    						if (!userInterface.getLibraryArtists().contains(songArtist) && songArtist != null) {
+    							userInterface.addArtistToLibrary(songArtist);
+    						}
+    						ArrayList<Album> albums = songArtist.getAllAlbums();
+    						for (Album album : albums) {
+    							if (album.getCertainSong(input) != null) {
+    								userInterface.addAlbumToLibrary(album);
+    								break;
+    							}
+    						}
+            				String format = String.format("%s added to library", ourSong.getSongName());
+            				System.out.println(format);
+            			}
+            		}
+            		else if (input.equals("c")) {
+            			System.out.println("Input album to add to library");
+            			input = scanner.nextLine();
+            			ArrayList<Album> foundAlbums = userInterface.searchByAlbumTitle(input);
+            			if (foundAlbums.size() == 0) {
+            				System.out.println("Album does not exist in store");
+            			}
+            			else if (foundAlbums.size() > 1) {
+            				boolean albumSelected = false;
+            				while (albumSelected == false) {
+    	        				System.out.println("Enter artist of desired album");
+    	        				for (Album foundAlbum : foundAlbums) {
+    	        					System.out.println(foundAlbum.getArtistName());
+    	        				}
+    	        				input = scanner.nextLine();
+    	        				for (Album foundAlbum1 : foundAlbums) {
+    	        					if (foundAlbum1.getArtistName().equals(input)) {
+    	        						userInterface.addAlbumToLibrary(foundAlbum1);
+    	        						// adds all songs in album
+    	                				for (Song song : foundAlbum1.getAllSongs()) {
+    	                					userInterface.addSongToLibrary(song);
+    	                				}
+    	                				String format = String.format("%s added to library", foundAlbum1.getAlbumName());
+    	                				System.out.println(format);
+    	        						albumSelected = true;
+    	        						Artist songArtist = userInterface.searchArtistFromAlbum(foundAlbum1.getArtistName());
+    	        						if (!userInterface.getLibraryArtists().contains(songArtist) && songArtist != null) {
+    	        							userInterface.addArtistToLibrary(songArtist);
+    	        						}
+    	        					}
+    	        				}
+    	        			}
+            			}
+            			else {
+            				Album ourAlbum = foundAlbums.get(0);
+            				userInterface.addAlbumToLibrary(ourAlbum);
+            				// adds all songs in album
+            				for (Song song : ourAlbum.getAllSongs()) {
+            					userInterface.addSongToLibrary(song);
+            				}
+    						Artist songArtist = userInterface.searchArtistFromAlbum(ourAlbum.getArtistName());
+    						if (!userInterface.getLibraryArtists().contains(songArtist) && songArtist != null) {
+    							userInterface.addArtistToLibrary(songArtist);
+    						}
+            				String format = String.format("%s added to library", ourAlbum.getAlbumName());
+            				System.out.println(format);
+            			}
+            		}
+            		else {
+            			System.out.print("Invalid command");
+            		}
+        			
         		}
         		else if (input.equals("b")) {
-        			System.out.println("Input song to add to library");
-        			input = scanner.nextLine();
-	        		ArrayList<Song> foundSongs = userInterface.searchByTitle(input);
-	        		if (foundSongs.size() == 0) {
-	        			System.out.println("Song does not exist in store");
-	        		}
-        			else if (foundSongs.size() > 1) {
-        				boolean albumSelected = false;
-        				while (albumSelected == false) {
-	        				System.out.println("Enter artist of desired song");
-	        				for (Song song : foundSongs) {
-	        					System.out.println(song.getArtistName());
-	        				}
-	        				input = scanner.nextLine();
-	        				for (Song song1 : foundSongs) {
-	        					if (song1.getArtistName().equals(input)) {
-	        						userInterface.addSongToLibrary(song1);
-	        						String format = String.format("%s added to library", song1.getSongName());
-	        						System.out.println(format);
-	        						albumSelected = true;
-	        						Artist songArtist = userInterface.searchArtistFromSong(song1.getArtistName());
-	        						
-	        						if (!userInterface.getLibraryArtists().contains(songArtist) && songArtist != null) {
-	        							userInterface.addArtistToLibrary(songArtist);
-	        							albumSelected = true;
-	        						}
-	        						ArrayList<Album> albums = songArtist.getAllAlbums();
-	        						for (Album album : albums) {
-	        							if (album.getCertainSong(input) != null) {
-	        								userInterface.addAlbumToLibrary(album);
-	        								break;
-	        							}
-	        						}
-	        					}
-	        				}
-        				}
-        			}
-        			else {
-        				Song ourSong = foundSongs.get(0);
-        				userInterface.addSongToLibrary(ourSong);
-						Artist songArtist = userInterface.searchArtistFromAlbum(ourSong.getArtistName());
-						if (!userInterface.getLibraryArtists().contains(songArtist) && songArtist != null) {
-							userInterface.addArtistToLibrary(songArtist);
-						}
-						ArrayList<Album> albums = songArtist.getAllAlbums();
-						for (Album album : albums) {
-							if (album.getCertainSong(input) != null) {
-								userInterface.addAlbumToLibrary(album);
-								break;
-							}
-						}
-        				String format = String.format("%s added to library", ourSong.getSongName());
-        				System.out.println(format);
-        			}
+        			System.out.println("Input 'a': list artists");
+        			System.out.println("Input 'b': list albums");
+            		System.out.println("Input 'c': list playlists");
+            		System.out.println("Input 'd': list favorites");
+            		System.out.println("Input 'e': list songs in library");
+            		input = scanner.nextLine();
+            		
+            		if (input.equals("a")) {
+            			for (Artist artist : userInterface.getLibraryArtists()) {
+            				System.out.println(artist.getArtistName());
+            			}
+            			
+            		}
+            		else if (input.equals("b")) {
+            			for (Album album : userInterface.getLibraryAlbums()) {
+            				System.out.println(album.getAlbumName());
+            			}
+            		}
+            		else if (input.equals("c")) {
+            			for (Playlist playlist : userInterface.getLibraryPlaylists()) {
+            				System.out.println(playlist.getPlaylistName());
+            			}
+            		}
+            		else if (input.equals("d")) {
+            			for (Song song : userInterface.getLibraryFavorites()) {
+            				System.out.println(song.getSongName());
+            			}
+            		}
+            		else if (input.equals("e")) {
+            			for (Song song : userInterface.getLibrarySongs()) {
+            				System.out.println(song.getSongName());
+            			}
+            		}
+            		else {
+            			System.out.println("Invalid command");
+            		}
         		}
         		else if (input.equals("c")) {
-        			System.out.println("Input album to add to library");
-        			input = scanner.nextLine();
-        			ArrayList<Album> foundAlbums = userInterface.searchByAlbumTitle(input);
-        			if (foundAlbums.size() == 0) {
-        				System.out.println("Album does not exist in store");
-        			}
-        			else if (foundAlbums.size() > 1) {
-        				boolean albumSelected = false;
-        				while (albumSelected == false) {
-	        				System.out.println("Enter artist of desired album");
-	        				for (Album foundAlbum : foundAlbums) {
-	        					System.out.println(foundAlbum.getArtistName());
-	        				}
-	        				input = scanner.nextLine();
-	        				for (Album foundAlbum1 : foundAlbums) {
-	        					if (foundAlbum1.getArtistName().equals(input)) {
-	        						userInterface.addAlbumToLibrary(foundAlbum1);
-	        						// adds all songs in album
-	                				for (Song song : foundAlbum1.getAllSongs()) {
-	                					userInterface.addSongToLibrary(song);
-	                				}
-	                				String format = String.format("%s added to library", foundAlbum1.getAlbumName());
-	                				System.out.println(format);
-	        						albumSelected = true;
-	        						Artist songArtist = userInterface.searchArtistFromAlbum(foundAlbum1.getArtistName());
-	        						if (!userInterface.getLibraryArtists().contains(songArtist) && songArtist != null) {
-	        							userInterface.addArtistToLibrary(songArtist);
-	        						}
-	        					}
-	        				}
-	        			}
-        			}
-        			else {
-        				Album ourAlbum = foundAlbums.get(0);
-        				userInterface.addAlbumToLibrary(ourAlbum);
-        				// adds all songs in album
-        				for (Song song : ourAlbum.getAllSongs()) {
-        					userInterface.addSongToLibrary(song);
-        				}
-						Artist songArtist = userInterface.searchArtistFromAlbum(ourAlbum.getArtistName());
-						if (!userInterface.getLibraryArtists().contains(songArtist) && songArtist != null) {
-							userInterface.addArtistToLibrary(songArtist);
-						}
-        				String format = String.format("%s added to library", ourAlbum.getAlbumName());
-        				System.out.println(format);
-        			}
+        			System.out.println("Input 'a': search for songs by title");
+    	        	System.out.println("Input 'b': search for songs by artist");
+    	        	System.out.println("Input 'c': search for album by title");
+    	        	System.out.println("Input 'd': search for album by artist");
+    	        	System.out.println("Input 'd': search for album by genre");
+    	        	input = scanner.nextLine();
+    	        	
+    	        	if (input.equals("a")) {
+            			ArrayList<Song> songs = new ArrayList<>();
+            			System.out.println("Insert song title");
+            			input = scanner.nextLine();
+            			for (Song song : userInterface.getLibrarySongs()) {
+            				if (song.getSongName().equals(input)) {
+            					songs.add(song);
+            				}
+            			}
+            			if (songs.size() == 0) {
+            				System.out.println("Song does not exits in library");
+            			}
+            			else {
+    	        			for (Song song1 : songs) {
+    	        				System.out.println(song1.getSongName() + ", " + song1.getArtistName() + ", " + song1.getAlbumName());
+    	        			}
+            			}
+            		}
+            		else if (input.equals("b")) {
+            			System.out.println("Insert artist name");
+            			input = scanner.nextLine();
+            			boolean found = false;
+            			for (Song song : userInterface.getLibrarySongs()) {
+            				if (song.getArtistName().equals(input)) {
+            					found = true;
+            					System.out.println(song.getSongName() + ", " + song.getArtistName() + ", " + song.getAlbumName());
+            				}
+            			}
+            			if (found == false) {
+            				System.out.println("Artist has no songs in library");
+            			}
+            		}
+            		else if (input.equals("c")) {
+            			System.out.println("Insert album title");
+            			input = scanner.nextLine();
+            			boolean found = false;
+            			for (Album album : userInterface.getLibraryAlbums()) {
+            				if (album.getAlbumName().equals(input)) {
+            					found = true;
+    		    				System.out.println("Album: " + album.getAlbumName());
+    		    				System.out.println("Artist: " + album.getArtistName());
+    		    				System.out.println("Released: " + album.getAlbumYear());
+    		    				System.out.println("Genre: " + album.getAlbumGenre());
+    		    				System.out.println("Songs:");
+    		    				for (Song song : album.getAllSongs()) {
+    		    					System.out.println("\t" + song.getSongName());
+    		    				}
+            				}
+            			}
+            			if (found == false) {
+            				System.out.println("Album does not exist within library");
+            			}
+            		}
+            		else if (input.equals("d")) {
+            			System.out.println("Insert artist name");
+            			input = scanner.nextLine();
+            			boolean found = false;
+            			for (Album album : userInterface.getLibraryAlbums()) {
+            				if (album.getArtistName().equals(input)) {
+            					found = true;
+    		    				System.out.println("Album: " + album.getAlbumName());
+    		    				System.out.println("Artist: " + album.getArtistName());
+    		    				System.out.println("Released: " + album.getAlbumYear());
+    		    				System.out.println("Genre: " + album.getAlbumGenre());
+    		    				System.out.println("Songs:");
+    		    				for (Song song : album.getAllSongs()) {
+    		    					System.out.println("\t" + song.getSongName());
+    		    				}
+            				}
+            			}
+            			if (found == false) {
+            				System.out.println("Artist does not have any albums in library");
+            			}
+            		}
+            		else if (input.equals("e")) {
+            			System.out.print("What genre: ");
+            			input = scanner.nextLine();
+            			for (Album album : userInterface.getLibraryAlbums()) {
+            				if (album.getAlbumGenre().equals(input)) {
+            					for (Song song : album.getAllSongs()) {
+            						System.out.println(song.getSongName() + " By: " + song.getArtistName());
+            					}
+            				}
+            			}
+            			
+            		}
+            		else {
+            			System.out.println("Invalid command");
+            		}
+    	        	
         		}
         		else if (input.equals("d")) {
-        			for (Artist artist : userInterface.getLibraryArtists()) {
-        				System.out.println(artist.getArtistName());
-        			}
+        		    ArrayList<Song> songs = userInterface.getLibrarySongs();
+        		    
+        		    // uses bubble sort for comparing songs
+        		    for (int i = 0; i < songs.size() - 1; i++) {
+        		        for (int j = 0; j < songs.size() - i - 1; j++) {
+        		            Song s1 = songs.get(j);
+        		            Song s2 = songs.get(j + 1);
+
+        		            // Compare by title
+        		            boolean swap = false;
+        		            if (s1.getSongName().compareTo(s2.getSongName()) > 0) {
+        		                swap = true;
+        		            } 
+        		            // compare by artist 
+        		            else if (s1.getSongName().equals(s2.getSongName()) &&
+        		                     s1.getArtistName().compareTo(s2.getArtistName()) > 0) {
+        		                swap = true;
+        		            } 
+        		            // compare by rating
+        		            else if (s1.getSongName().equals(s2.getSongName()) &&
+        		                     s1.getArtistName().equals(s2.getArtistName()) &&
+        		                     s1.getRating().compareTo(s2.getRating()) < 0) { // Compare enums directly
+        		                swap = true;
+        		            }
+        		            // Swap elements if needed
+        		            if (swap) {
+        		                songs.set(j, s2);
+        		                songs.set(j + 1, s1);
+        		            }
+        		        }
+        		    }
+        		    System.out.println("Library Sorted");
+        		    for (Song song : songs) {
+        		        System.out.println(song.getSongName() + " - " + song.getArtistName() + " (Rating: " + song.getRating() + ")");
+        		    }
+        		    System.out.println();
         		}
         		else if (input.equals("e")) {
-        			for (Album album : userInterface.getLibraryAlbums()) {
-        				System.out.println(album.getAlbumName());
-        			}
+        			System.out.println("shuffled songs");
+        			userInterface.shuffleSongs();
         		}
+  		
         		else if (input.equals("f")) {
-        			for (Playlist playlist : userInterface.getLibraryPlaylists()) {
-        				System.out.println(playlist.getPlaylistName());
-        			}
-        		}
-        		else if (input.equals("g")) {
-        			for (Song song : userInterface.getLibraryFavorites()) {
-        				System.out.println(song.getSongName());
-        			}
-        		}
-        		else if (input.equals("h")) {
         			System.out.println("Select song to rate");
         			input = scanner.nextLine();
         			ArrayList<Song> foundSongs = userInterface.getLibrarySongs();
@@ -433,38 +595,7 @@ public class Main {
 						}
         			}
         		}
-        			
-
-        		else if (input.equals("i")) {
-        			System.out.println("Enter playlist you wish to view");
-        			input = scanner.nextLine();
-        			for (Playlist playlist : userInterface.getLibraryPlaylists()) {
-        				if (playlist.getPlaylistName().equals(input)) {
-        					for (Song song : playlist.getPlaylistSongs()) {
-        						System.out.println(song.getSongName() + ", " + song.getArtistName());
-        					}
-        				}
-        			}
-        		}
-        		else if (input.equals("j")) {
-        			System.out.println("Enter playlist you wish to remove song from");
-        			input = scanner.nextLine();
-        			for (Playlist playlist : userInterface.getLibraryPlaylists()) {
-        				if (playlist.getPlaylistName().equals(input)) {
-        					System.out.println("Enter song you wish to remove from playlist");
-        					input = scanner.nextLine();
-        					for (Song song : playlist.getPlaylistSongs()) {
-        						if (song.getSongName().equals(input)) {
-        							userInterface.removeFromPlaylist(song, playlist);
-                    				String format = String.format("%s removed from %s", song.getSongName(), playlist.getPlaylistName());
-                    				System.out.println(format);
-        						}
-        					}
-        				}
-        			}
-        			System.out.println("Song or Playlist not in library");
-        		}
-        		else if (input.equals("k")) {
+        		else if (input.equals("g")) {
         			System.out.println("Enter playlist you with to add song to");
         			input = scanner.nextLine();
         			for (Playlist playlist : userInterface.getLibraryPlaylists()) {
@@ -502,136 +633,36 @@ public class Main {
         				}
         			}
         		}
-        		else if (input.equals("q")) {
-        			storeMode = true;
-        		}
-        		else if (input.equals("logout")) {
-        			loggedIn = false;
-        		}
-        		else if (input.equals("l")) {
-        			for (Song song : userInterface.getLibrarySongs()) {
-        				System.out.println(song.getSongName());
-        			}
-        		}
-        		else if (input.equals("m")) {
-        			ArrayList<Song> songs = new ArrayList<>();
-        			System.out.println("Insert song title");
+        		else if (input.equals("h")) {
+        			System.out.println("Enter playlist you wish to remove song from");
         			input = scanner.nextLine();
-        			for (Song song : userInterface.getLibrarySongs()) {
-        				if (song.getSongName().equals(input)) {
-        					songs.add(song);
+        			for (Playlist playlist : userInterface.getLibraryPlaylists()) {
+        				if (playlist.getPlaylistName().equals(input)) {
+        					System.out.println("Enter song you wish to remove from playlist");
+        					input = scanner.nextLine();
+        					for (Song song : playlist.getPlaylistSongs()) {
+        						if (song.getSongName().equals(input)) {
+        							userInterface.removeFromPlaylist(song, playlist);
+                    				String format = String.format("%s removed from %s", song.getSongName(), playlist.getPlaylistName());
+                    				System.out.println(format);
+        						}
+        					}
         				}
         			}
-        			if (songs.size() == 0) {
-        				System.out.println("Song does not exits in library");
-        			}
-        			else {
-	        			for (Song song1 : songs) {
-	        				System.out.println(song1.getSongName() + ", " + song1.getArtistName() + ", " + song1.getAlbumName());
-	        			}
-        			}
+        			System.out.println("Song or Playlist not in library");
         		}
-        		else if (input.equals("n")) {
-        			System.out.println("Insert artist name");
+        		else if (input.equals("i")) {
+        			System.out.println("Enter playlist you wish to view");
         			input = scanner.nextLine();
-        			boolean found = false;
-        			for (Song song : userInterface.getLibrarySongs()) {
-        				if (song.getArtistName().equals(input)) {
-        					found = true;
-        					System.out.println(song.getSongName() + ", " + song.getArtistName() + ", " + song.getAlbumName());
+        			for (Playlist playlist : userInterface.getLibraryPlaylists()) {
+        				if (playlist.getPlaylistName().equals(input)) {
+        					for (Song song : playlist.getPlaylistSongs()) {
+        						System.out.println(song.getSongName() + ", " + song.getArtistName());
+        					}
         				}
         			}
-        			if (found == false) {
-        				System.out.println("Artist has no songs in library");
-        			}
         		}
-        		else if (input.equals("o")) {
-        			System.out.println("Insert album title");
-        			input = scanner.nextLine();
-        			boolean found = false;
-        			for (Album album : userInterface.getLibraryAlbums()) {
-        				if (album.getAlbumName().equals(input)) {
-        					found = true;
-		    				System.out.println("Album: " + album.getAlbumName());
-		    				System.out.println("Artist: " + album.getArtistName());
-		    				System.out.println("Released: " + album.getAlbumYear());
-		    				System.out.println("Genre: " + album.getAlbumGenre());
-		    				System.out.println("Songs:");
-		    				for (Song song : album.getAllSongs()) {
-		    					System.out.println("\t" + song.getSongName());
-		    				}
-        				}
-        			}
-        			if (found == false) {
-        				System.out.println("Album does not exist within library");
-        			}
-        		}
-        		else if (input.equals("p")) {
-        			System.out.println("Insert artist name");
-        			input = scanner.nextLine();
-        			boolean found = false;
-        			for (Album album : userInterface.getLibraryAlbums()) {
-        				if (album.getArtistName().equals(input)) {
-        					found = true;
-		    				System.out.println("Album: " + album.getAlbumName());
-		    				System.out.println("Artist: " + album.getArtistName());
-		    				System.out.println("Released: " + album.getAlbumYear());
-		    				System.out.println("Genre: " + album.getAlbumGenre());
-		    				System.out.println("Songs:");
-		    				for (Song song : album.getAllSongs()) {
-		    					System.out.println("\t" + song.getSongName());
-		    				}
-        				}
-        			}
-        			if (found == false) {
-        				System.out.println("Artist does not have any albums in library");
-        			}
-        		}
-        		
-        		else if (input.equals("r")) {
-        		    ArrayList<Song> songs = userInterface.getLibrarySongs();
-        		    
-        		    // uses bubble sort for comparing songs
-        		    for (int i = 0; i < songs.size() - 1; i++) {
-        		        for (int j = 0; j < songs.size() - i - 1; j++) {
-        		            Song s1 = songs.get(j);
-        		            Song s2 = songs.get(j + 1);
-
-        		            // Compare by title
-        		            boolean swap = false;
-        		            if (s1.getSongName().compareTo(s2.getSongName()) > 0) {
-        		                swap = true;
-        		            } 
-        		            // compare by artist 
-        		            else if (s1.getSongName().equals(s2.getSongName()) &&
-        		                     s1.getArtistName().compareTo(s2.getArtistName()) > 0) {
-        		                swap = true;
-        		            } 
-        		            // compare by rating
-        		            else if (s1.getSongName().equals(s2.getSongName()) &&
-        		                     s1.getArtistName().equals(s2.getArtistName()) &&
-        		                     s1.getRating().compareTo(s2.getRating()) < 0) { // Compare enums directly
-        		                swap = true;
-        		            }
-
-        		            // Swap elements if needed
-        		            if (swap) {
-        		                songs.set(j, s2);
-        		                songs.set(j + 1, s1);
-        		            }
-        		        }
-        		    }
-        		    System.out.println("Library Sorted");
-        		    for (Song song : songs) {
-        		        System.out.println(song.getSongName() + " - " + song.getArtistName() + " (Rating: " + song.getRating() + ")");
-        		    }
-        		    System.out.println();
-        		}
-        		else if (input.equals("s")) {
-        			System.out.println("shuffled songs");
-        			userInterface.shuffleSongs();
-        		}
-        		else if (input.equals("t")) {
+        		else if (input.equals("j")) {
         			System.out.print("Enter the name of the song you want to remove: ");
         			input = scanner.nextLine();
         			ArrayList<Song> foundSongs = new ArrayList<>();
@@ -663,7 +694,7 @@ public class Main {
         			}
         			
         		}
-        		else if (input.equals("u")) {
+        		else if (input.equals("k")) {
         			System.out.print("Enter the name of the album you want to remove: ");
         			input = scanner.nextLine();
         			ArrayList<Album> foundAlbum = new ArrayList<>();
@@ -694,6 +725,12 @@ public class Main {
         				System.out.println("Succesfully removed album");
         			}
         			
+        		}
+        		else if (input.equals("l")) {
+        			storeMode = true;
+        		}
+        		else if (input.equals("logout")) {
+        			loggedIn = false;
         		}
         		else {
 	        		System.out.println("Invalid input selected: try again");
