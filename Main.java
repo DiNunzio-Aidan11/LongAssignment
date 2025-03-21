@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.lang.String;
@@ -18,15 +19,17 @@ public class Main {
 	/*
 	 * First parses in the information to the store then calls for user inputs to process 
 	 */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         //System.out.println("Enter Album Text File: ");
         //String fileName = scanner.nextLine();
 
-        File file = new File("albums.txt"); 
+        File albumsFile = new File("albums.txt");
+        File usersFile = new File("users.txt");
         
-        if (!file.exists()) {  // Check if file exists before proceeding
+        if (!albumsFile.exists()) {  // Check if file exists before proceeding
             System.out.println("Error: File not found!");
+            scanner.close();
             return;
         }
 
@@ -92,7 +95,8 @@ public class Main {
                     String password = scanner.nextLine();
                     password = Password.encrypt(password);
                     
-                    if (users.addUser(username, password)) {
+                    if (users.addUser(username, password, usersFile)) {
+                    	users.createUserDataFile(username);
                         System.out.println("You can now log in.");
                     }
                 }

@@ -1,0 +1,96 @@
+﻿class BinarySearchTree<T extends Comparable<? super T>>
+{
+    protected BinaryNode<T> root;
+
+
+    public BinarySearchTree ()
+    {
+        root = null;
+    }
+
+
+    public void insert (T newData)
+    {
+        root = insert(root, newData);
+    }
+
+
+    private BinaryNode<T> insert (BinaryNode<T> node, T newData)
+    {
+        if (node == null) {              // need to create a new subtree
+            return new BinaryNode<T>(newData);
+        } else if (newData.compareTo(node.data) < 0) {   // insert on left
+            node.leftChild = insert(node.leftChild, newData); 
+        } else {                                         // insert on right
+            node.rightChild = insert(node.rightChild, newData);
+        }
+        return node;
+    } 
+
+
+    public void inOrder ()
+    {
+        inOrder(root);
+    }
+
+
+    private void inOrder (BinaryNode<T> node)
+    {
+        if (node != null) {
+            inOrder(node.leftChild);
+            System.out.print((node.data).toString() + " ");
+            inOrder(node.rightChild);
+        }
+    }
+
+
+    public boolean checkBST(BinaryNode<T> root) {
+        if (root == null) {
+            return true;
+        }
+        if (root.leftChild != null && root.leftChild.data.compareTo(root.data) >= 0) {
+            return false;
+        }
+        if (root.rightChild != null && root.rightChild.data.compareTo(root.data) < 0) {
+            return false;
+        }
+        return checkBST(root.leftChild) && checkBST(root.rightChild);
+    }
+
+
+    public boolean isAVL(BinaryNode<T> root) {
+        int leftSubHeight = checkHeight(root.leftChild);
+        int rightSubHeight = checkHeight(root.rightChild);
+        if (Math.abs(leftSubHeight - rightSubHeight) < 2) {
+            return true;
+        }
+        return false;
+    }
+
+
+    public int checkHeight(BinaryNode<T> root) {
+        if (root == null) {
+            return -1;
+        }
+        int leftHeight = checkHeight(root.leftChild);
+        int rightHeight = checkHeight(root.rightChild);
+        return Math.max(leftHeight, rightHeight) + 1;
+    }
+
+
+    class BinaryNode<T extends Comparable<? super T>>
+    {
+        T data;
+        BinaryNode<T> leftChild,  
+                      rightChild; 
+
+
+        public BinaryNode (T newData)
+        {
+            data = newData;
+            leftChild = rightChild = null;
+        }
+    }
+
+
+}

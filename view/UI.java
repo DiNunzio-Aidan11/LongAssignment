@@ -168,6 +168,10 @@ public class UI {
 	public void rateSong(Song a, Rating r) {
 		if (r == Rating.FIVESTAR) {
 			this.user.addToFavorites(a);
+			this.user.addToTopRated(a);
+		}
+		else if (r == Rating.FOURSTAR) {
+			this.user.addToTopRated(a);
 		}
 		a.setRating(r);
 	}

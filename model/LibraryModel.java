@@ -1,12 +1,15 @@
 package model;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class LibraryModel {
-	private ArrayList<Song> songs;
-	private ArrayList<Song> favorites;
-	private ArrayList<Playlist> playlists;
-	private ArrayList<Album> albums;
-	private ArrayList<Artist> artists;
+	protected ArrayList<Song> songs;
+	protected ArrayList<Song> favorites;
+	protected ArrayList<Song> topRated;
+	protected ArrayList<Playlist> playlists;
+	protected ArrayList<Album> albums;
+	protected ArrayList<Artist> artists;
+	protected HashMap<String, Integer> genreCount;
 	
 	public LibraryModel() {
 		this.songs = new ArrayList<>();
@@ -14,6 +17,8 @@ public class LibraryModel {
 		this.playlists = new ArrayList<>();
 		this.albums = new ArrayList<>();
 		this.artists = new ArrayList<>();
+		this.genreCount = new HashMap<>();
+		this.topRated = new ArrayList<>();
 	}
 	
 	// copy constructor
@@ -23,6 +28,30 @@ public class LibraryModel {
 		this.playlists = other.getLibraryPlaylists();
 		this.albums = other.getLibraryAlbums();
 		this.artists = other.getLibraryArtists();
+	}
+	
+	public void incrementGenreCount(String genre) {
+		if (this.genreCount.containsKey(genre)) {
+			this.genreCount.put(genre, this.genreCount.get(genre) + 1);
+			checkGenreCount(genre);
+		}
+		else {
+			this.genreCount.put(genre, 1);
+		}
+	}
+	
+	public void checkGenreCount(String genre) {
+		if (this.genreCount.get(genre) == 10) {
+			Playlist playlist = new Playlist(genre);
+			for (Song song : this.songs) {
+				String albumName = song.getAlbumName();
+				for (Album album : this.albums) {
+					if (album.getAlbumName().equals(albumName) && album.getAlbumGenre().equals(genre)) {
+						playlist.addSong(song);
+					}
+				}
+			}
+		}
 	}
 	
 	public void addPlaylist(String name) {
@@ -130,7 +159,7 @@ public class LibraryModel {
 		// adds a song as favorite if found
 		boolean seen = false;
 		for (Song cur : favorites) {
-			if (cur.getArtistName() == song.getArtistName() && cur.getSongName() == song.getSongName()) {
+			if (cur.getArtistName().equals(song.getArtistName()) && cur.getSongName().equals(song.getSongName())) {
 				seen = true;
 			}
 			if (seen) {
@@ -138,6 +167,19 @@ public class LibraryModel {
 			}
 		}
 		this.favorites.add(song);
+	}
+	
+	public void addToTopRated(Song song) {
+		boolean seen = false;
+		for (Song cur : topRated) {
+			if (cur.getArtistName().equals(song.getArtistName()) && cur.getSongName().equals(song.getSongName())) {
+				seen = true;
+			}
+			if (seen) {
+				return;
+			}
+		}
+		this.topRated.add(song);
 	}
 	
 	public ArrayList<Playlist> getLibraryPlaylists() {

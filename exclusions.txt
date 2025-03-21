@@ -1,0 +1,1 @@
+/Users/amritaansh/Desktop/everything/LEGGOS_stuff/data_reduction/SGAS1429/HST/SDSSJ1429p1202_F110W_0.03g0.8_cr2.5_0.7_EXP_drz_sci.fits /Users/amritaansh/Desktop/everything/LEGGOS_stuff/data_reduction/SGAS1429/HST/F110W_excluded_regs.reg

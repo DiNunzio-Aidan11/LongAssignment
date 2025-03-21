@@ -1,6 +1,10 @@
 package model;
 
 import java.util.HashMap;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.BufferedWriter;
 
 public class Users {
     private HashMap<String, User> hash;
@@ -9,12 +13,30 @@ public class Users {
         this.hash = new HashMap<>();
     }
 
-    public boolean addUser(String username, String password) {
+    public void createUserDataFile(String username) throws IOException {
+        File userDataFile = new File(username + ".txt");
+        userDataFile.createNewFile();
+    }
+
+    public boolean addUser(String username, String password, File file) {
         if (this.userExists(username)) {
             System.out.println("Username already exists");
             return false;
         }
-        //TODO: add it to a file
+        
+        try {
+        	FileWriter fileWriter = new FileWriter(file, true);
+        	BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        	
+        	bufferedWriter.write(username + "," + password + "\n");
+        	bufferedWriter.close();
+        	fileWriter.close();
+        }
+        
+        catch (IOException e) {
+        	System.err.println("File could not be accessed: " + e.getMessage());
+        }
+        
         hash.put(username, new User(username, password));
         return true;
     }
@@ -22,17 +44,6 @@ public class Users {
     // debug
     public User getUser(String username) {
         return hash.get(username);
-    }
-
-    public boolean removeUser(String username) {
-    	// removes user if applicable 
-        if (!(this.userExists(username))) {
-        	//TODO: remove user from file
-        	hash.remove(username);
-            return true;
-        }
-        System.out.println("User not found.");
-        return false;
     }
 
     public boolean userExists(String username) {
