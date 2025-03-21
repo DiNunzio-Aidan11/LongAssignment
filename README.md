@@ -1,9 +1,9 @@
 # todo 
 LA2 Finished [
 Part A (needs file storage)
-Part C {-a (changeup)
+Part C {-a
    -b
-   -c (needs in playlist)
+   -c 
    -e
    -f
    }
