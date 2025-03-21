@@ -40,4 +40,8 @@ public class Playlist {
 		return copy;
 	}
 	
+	public void setPlaylist(ArrayList<Song> pl) {
+		this.playlist = pl;
+	}
+	
 }

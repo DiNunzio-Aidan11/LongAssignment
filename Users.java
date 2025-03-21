@@ -19,14 +19,16 @@ public class Users {
         return true;
     }
 
-    // debug
     public User getUser(String username) {
-        return hash.get(username);
+    	if (userExists(username)) {
+    		return hash.get(username);
+    	}
+    	return null;
     }
 
     public boolean removeUser(String username) {
     	// removes user if applicable 
-        if (!(this.userExists(username))) {
+        if (this.userExists(username)) {
         	//TODO: remove user from file
         	hash.remove(username);
             return true;
