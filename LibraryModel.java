@@ -1,6 +1,9 @@
 package model;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class LibraryModel {
 	protected ArrayList<Song> songs;
@@ -10,6 +13,8 @@ public class LibraryModel {
 	protected ArrayList<Album> albums;
 	protected ArrayList<Artist> artists;
 	protected HashMap<String, Integer> genreCount;
+    protected ArrayList<Song> recentlyPlayed;
+    protected HashMap<Song, Integer> frequentlyPlayed;
 	
 	
 	public LibraryModel() {
@@ -20,6 +25,10 @@ public class LibraryModel {
 		this.artists = new ArrayList<>();
 		this.genreCount = new HashMap<>();
 		this.topRated = new ArrayList<>();
+        this.recentlyPlayed = new ArrayList<>();
+        this.frequentlyPlayed = new HashMap<>();
+		this.addPlaylist("Favorites");
+		this.addPlaylist("Top Rated");
 	}
 	
 	// copy constructor
@@ -31,6 +40,8 @@ public class LibraryModel {
 		this.artists = other.getLibraryArtists();
 		this.genreCount = new HashMap<>();
 		this.topRated = new ArrayList<>();
+        this.recentlyPlayed = other.recentlyPlayed;
+        this.frequentlyPlayed = other.frequentlyPlayed;
 	}
 	
 	public void addPlaylist(String name) {
@@ -73,6 +84,31 @@ public class LibraryModel {
 			}
 		}
 	}
+	
+	public List<Song> getMostFrequentlyPlayed() {
+	    return frequentlyPlayed.entrySet()
+	        .stream()
+	        .sorted(Map.Entry.<Song, Integer>comparingByValue().reversed())
+	        .limit(10)
+	        .map(Map.Entry::getKey)
+	        .collect(Collectors.toList());
+	}
+	
+	
+    public void playSong(Song song) {
+        frequentlyPlayed.put(song, frequentlyPlayed.getOrDefault(song, 0) + 1);
+    }
+
+    public ArrayList<Song> getRecentlyPlayed() {
+        return this.recentlyPlayed;
+    }
+    
+    public void addToRecentlyPlayed(Song song) {
+        if (this.recentlyPlayed.size() == 10) {
+            recentlyPlayed.remove(0);
+        }
+        recentlyPlayed.add(song);
+    }
 	
 	public void addSong(Song song) {
 		// adds in the song to the library if it is not a duplicate
@@ -175,24 +211,24 @@ public class LibraryModel {
 		return;
 	}
 	
-	public void toggleFavorite(Song song) {
-		if (song.isFavorite()) {
-			song.setFavorite(false);
-			this.favorites.remove(song);
-			return;
-		}
-		song.setFavorite(true);
-		this.favorites.add(song);
-	}
-	
-	public void rateSong(Song song, Rating rating) {
-		song.setRating(rating);
-		if (rating == Rating.FIVESTAR) {
-			if(!song.isFavorite()) {
-				toggleFavorite(song);
-			}
-		}
-	}
+//	public void toggleFavorite(Song song) {
+//		if (song.isFavorite()) {
+//			song.setFavorite(false);
+//			this.favorites.remove(song);
+//			return;
+//		}
+//		song.setFavorite(true);
+//		this.favorites.add(song);
+//	}
+//	
+//	public void rateSong(Song song, Rating rating) {
+//		song.setRating(rating);
+//		if (rating == Rating.FIVESTAR) {
+//			if(!song.isFavorite()) {
+//				toggleFavorite(song);
+//			}
+//		}
+//	}
 	
 	public ArrayList<Playlist> getLibraryPlaylists() {
 		return playlists;
@@ -237,6 +273,7 @@ public class LibraryModel {
 			}
 		}
 		this.favorites.add(song);
+		this.addSongToPlaylist(song, this.playlists.get(0));
 	}
 	
 	public void addToTopRated(Song song) {
@@ -250,6 +287,7 @@ public class LibraryModel {
 			}
 		}
 		this.topRated.add(song);
+		this.addSongToPlaylist(song, this.playlists.get(1));
 	}
 	
 }
