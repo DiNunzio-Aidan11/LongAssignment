@@ -2,6 +2,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.lang.String;
+import java.io.IOException;
+import java.io.FileWriter;
 
 import model.Album;
 import model.Artist;
@@ -16,17 +18,19 @@ import view.UI;
 
 public class Main {
 	/*
-	 * First parses in the information to the store then calls for user inputs to process 
-	 */
-    public static void main(String[] args) {
+	 * First parses in the information to the store then calls for user inputs to process */
+    public static void main(String[] args) throws IOException {
+
         Scanner scanner = new Scanner(System.in);
         //System.out.println("Enter Album Text File: ");
         //String fileName = scanner.nextLine();
 
-        File file = new File("albums.txt"); 
-        
-        if (!file.exists()) {  // Check if file exists before proceeding
+        File albumsFile = new File("albums.txt"); 
+        File usersFile = new File("users.txt");
+
+        if (!albumsFile.exists()) {  // Check if file exists before proceeding
             System.out.println("Error: File not found!");
+            scanner.close();
             return;
         }
 
@@ -41,9 +45,13 @@ public class Main {
         
         //TODO: add in stored information for users from other file
         Users users = new Users();
-        User curUser;
+        User curUser = null;
+
+        users.loadUsers();
+
         while (true) {
         	while (!loggedIn) {
+                System.out.println("========= login menu ==========");
                 System.out.println("Please Choose an Option:");
                 System.out.println("Input '1': Log in");
                 System.out.println("Input '2': Register User");
@@ -53,51 +61,84 @@ public class Main {
                 if (choice.equals("1")) {
                     System.out.print("Enter username: ");
                     String username = scanner.nextLine();
-                    if (users.userExists(username)) {
-                    	System.out.print("Enter password: ");
-                    	String password = scanner.nextLine();
-                    	password = Password.encrypt(password);
-                    
-                    	if (users.authenticate(username, password)) {
-                    		System.out.println("Login successful! Welcome, " + username);
-                    		loggedIn = true;
-                    		curUser = users.getUser(username);
-                    		userInterface.setUser(curUser);
-                    	} 
-                    	else {
-                    		System.out.println("Invalid credentials, try again.");
-                    	}
+
+                    File userFile = new File(username + ".txt");
+
+                    if (userFile.exists()) {
+                        System.out.print("Enter password: ");
+                        String password = scanner.nextLine();
+
+                        Scanner fileScanner = new Scanner(usersFile);
+                        boolean authenticated = false;
+
+                        while (fileScanner.hasNextLine()) {
+                            String line = fileScanner.nextLine();
+                            String[] parts = line.split(",");
+                            String fileUsername = parts[0];
+                            String encryptedPassword = parts[1];
+                            String inputEncrypted = Password.encrypt(password);
+
+                            if (username.equals(fileUsername) && inputEncrypted.equals(encryptedPassword)) {
+                                System.out.println("Login successfull! Welcome, " + username + "!");
+                                loggedIn = true;
+                                curUser = users.getUser(username);
+                                userInterface.setUser(curUser);
+                                authenticated = true;
+                                
+                                break;
+                            }
+                        }
+                        fileScanner.close();
+
+                        if (!authenticated && !loggedIn) {
+                            System.out.println("Invalid credentials, try again");
+                        }
                     }
                     else {
-                    	System.out.println("User does not exist");
+                        System.out.println("User does not exist");
                     }
-                } 
+
+                }
                 else if (choice.equals("2")) {
                 	String username = "";
                 	boolean uniqueUser = false;
-                	while (!uniqueUser) {
-                		System.out.print("Choose a username: ");
-                		username = scanner.nextLine();
-                		if (username.length() == 0) {
-                			System.out.println("Cant have blank username");
-                		}
-                		else if (users.userExists(username)) {
-                			System.out.println("username already taken");
-                		}
-                		else {
-                			uniqueUser = true;
-                		}
-                	}
+
+                    Scanner fileScanner = new Scanner(usersFile);
+                    ArrayList<String> fileUsers = new ArrayList<>();
+
+                    while (fileScanner.hasNextLine()) {
+                        String line = fileScanner.nextLine();
+                        String parts[] = line.split(",");
+                        String fileUsername = parts[0];
+                        fileUsers.add(fileUsername);
+                    }
+
+                    fileScanner.close();
+                    while (!uniqueUser) {
+                        System.out.print("Choose a username: ");
+                        username = scanner.nextLine();
+                        if (username.length() == 0) {
+                            System.out.println("Can't have blank username");
+                        }
+                        else if (fileUsers.contains(username)) {
+                            System.out.println("username already taken");
+                        }
+                        else {
+                            uniqueUser = true;
+                        }
+                    }
                     System.out.print("Choose a password: ");
                     String password = scanner.nextLine();
                     password = Password.encrypt(password);
-                    
-                    if (users.addUser(username, password)) {
+
+                    if (users.addUser(username, password, usersFile)) {
+                        users.createUserDataFile(username);
                         System.out.println("You can now log in.");
                     }
                 }
                 else if (choice.equals("3")) {
-                	break;
+                    scanner.close();
+                	return;
                 }
                 else {
                     System.out.println("Invalid option, try again.");
@@ -184,6 +225,11 @@ public class Main {
 	        		storeMode = false;
 	        	}
 	        	else if (input.equals("logout")) {
+                    if (curUser != null) {
+                        FileWriter clearer = new FileWriter(curUser.getUsername() + ".txt", false);
+                        clearer.close();
+                        curUser.writeUserInfo();
+                    }
 	        		loggedIn = false;
 	        	}
 	        	else {
@@ -639,14 +685,14 @@ public class Main {
 	        					if (song1.getArtistName().equals(input)) {
 	        						songSelected = true;
 	        						Song ourSong = song1;
-	        						userInterface.markFavorite(ourSong);
+	        						userInterface.markFavorite(ourSong, true);
 	        						
 	        					}
 	        				}
         				}
         			}
         			else {
-        				userInterface.markFavorite(foundSongs.get(0));
+        				userInterface.markFavorite(foundSongs.get(0), true);
         			}
         		}
         		else if (input.equals("h")) {
@@ -727,11 +773,40 @@ public class Main {
         				System.out.println("Playlist not found");
         			}
         		}
-        		else if (input.equals("k")) {
-        			System.out.println("Enter the name of the playlist you want to shuffle");
-        			input = scanner.nextLine();
-        			userInterface.shufflePlaylist(input);
-        		}
+
+
+                else if (input.equals("k")) {
+                    System.out.print("Enter the name of the album you want to remove: ");
+                    input = scanner.nextLine();
+                    ArrayList<Album> foundAlbum = new ArrayList<>();
+                    for (Album album : userInterface.getLibraryAlbums()) {
+                        if (album.getAlbumName().equals(input)) {
+                            foundAlbum.add(album);
+                        }
+                    }
+                    if (foundAlbum.size() == 0) {
+                        System.out.println("Album not in library");
+                    }
+                    else if (foundAlbum.size() != 1){
+                        System.out.println("From which artist: ");
+                        for (int i = 0; i < foundAlbum.size(); i++) {
+                            System.out.println(foundAlbum.get(i).getArtistName());
+                        }
+                        input = scanner.nextLine();
+                        for (int i = 0; i < foundAlbum.size(); i++) {
+                            if (foundAlbum.get(i).getArtistName().equals(input)) {
+                                userInterface.removeAlbum(foundAlbum.get(i));
+                                System.out.println("Succesfully removed album");
+                                break;
+                            }
+                        }	
+                    }
+                    else {
+                        userInterface.removeAlbum(foundAlbum.get(0));
+                        System.out.println("Succesfully removed album");
+                    }
+                }            
+
         		else if (input.equals("l")) {
         			System.out.print("Enter the name of the song you want to remove: ");
         			input = scanner.nextLine();
@@ -800,6 +875,11 @@ public class Main {
         			storeMode = true;
         		}
         		else if (input.equals("logout")) {
+                    if (curUser != null) {
+                        FileWriter clearer = new FileWriter(curUser.getUsername() + ".txt", false);
+                        clearer.close();
+                        curUser.writeUserInfo();
+                    }
         			loggedIn = false;
         		}
         		else {
