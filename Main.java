@@ -423,6 +423,7 @@ public class Main {
     	        	System.out.println("Input 'c': search for album by title");
     	        	System.out.println("Input 'd': search for album by artist");
     	        	System.out.println("Input 'd': search for album by genre");
+    	        	System.out.println("Input 'e': search by genre title");
     	        	input = scanner.nextLine();
     	        	
     	        	if (input.equals("a")) {
