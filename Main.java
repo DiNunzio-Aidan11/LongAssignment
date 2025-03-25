@@ -250,10 +250,11 @@ public class Main {
         		System.out.println("Input 'h': add song to playlist");
         		System.out.println("Input 'i': delete song from playlist");
         		System.out.println("Input 'j': view playlist");
-        		System.out.println("Input 'k': shuffle playlist");
+        		System.out.println("Input 'k': remove playlist");
         		System.out.println("Input 'l': remove song from library");
         		System.out.println("Input 'm': remove album from library");
         		System.out.println("Input 'n': switch to store");
+        		System.out.println("Input 'o': to shuffle playlist");
         		System.out.println("Input 'logout': to logout");
         		
         		String input = scanner.nextLine();
@@ -672,8 +673,7 @@ public class Main {
 	        					if (song1.getArtistName().equals(input)) {
 	        						songSelected = true;
 	        						Song ourSong = song1;
-	        						userInterface.markFavorite(ourSong, true);
-	        						
+	        						userInterface.markFavorite(ourSong, !(ourSong.isFavorite()));	
 	        					}
 	        				}
         				}
@@ -682,6 +682,7 @@ public class Main {
         				userInterface.markFavorite(foundSongs.get(0), true);
         			}
         		}
+        		
         		else if (input.equals("h")) {
         			System.out.println("Enter playlist you with to add song to");
         			input = scanner.nextLine();
@@ -859,6 +860,12 @@ public class Main {
         			
         		}
         		else if (input.equals("n")) {
+        			storeMode = true;
+        		}
+        		else if (input.equals("o")) {
+        			System.out.println("Enter the name of the playlist you want to shuffle");
+        			input = scanner.nextLine();
+        			userInterface.shufflePlaylist(input);
         			storeMode = true;
         		}
         		else if (input.equals("logout")) {
