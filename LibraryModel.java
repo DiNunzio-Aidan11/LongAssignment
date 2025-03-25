@@ -126,6 +126,7 @@ public class LibraryModel {
 			this.favorites.add(song);
 		}
 		this.songs.add(song);
+		this.frequentlyPlayed.put(song, 0);
 	}
 	
 	public void removeSong(Song song) {
