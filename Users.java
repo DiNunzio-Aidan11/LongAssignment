@@ -1,6 +1,11 @@
 package model;
 
 import java.util.HashMap;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.util.Scanner;
 
 public class Users {
     private HashMap<String, User> hash;
@@ -9,32 +14,37 @@ public class Users {
         this.hash = new HashMap<>();
     }
 
-    public boolean addUser(String username, String password) {
+    public void createUserDataFile(String username) throws IOException {
+        File userDataFile = new File(username + ".txt");
+        userDataFile.createNewFile();
+    }
+
+    public boolean addUser(String username, String password, File file) {
         if (this.userExists(username)) {
             System.out.println("Username already exists");
             return false;
         }
-        //TODO: add it to a file
+        
+        try {
+        	FileWriter fileWriter = new FileWriter(file, true);
+        	BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        	
+        	bufferedWriter.write(username + "," + password + "\n");
+        	bufferedWriter.close();
+        	fileWriter.close();
+        }
+        
+        catch (IOException e) {
+        	System.err.println("File could not be accessed: " + e.getMessage());
+        }
+        
         hash.put(username, new User(username, password));
         return true;
     }
 
+    // debug
     public User getUser(String username) {
-    	if (userExists(username)) {
-    		return hash.get(username);
-    	}
-    	return null;
-    }
-
-    public boolean removeUser(String username) {
-    	// removes user if applicable 
-        if (this.userExists(username)) {
-        	//TODO: remove user from file
-        	hash.remove(username);
-            return true;
-        }
-        System.out.println("User not found.");
-        return false;
+        return hash.get(username);
     }
 
     public boolean userExists(String username) {
@@ -50,6 +60,15 @@ public class Users {
         }
         return false;
     }
-        
+
+    public void loadUsers() throws IOException {
+        File file = new File("users.txt");
+        Scanner scanner = new Scanner(file);
+        while (scanner.hasNextLine()) {
+            String[] parts = scanner.nextLine().split(",");
+            this.hash.put(parts[0], new User(parts[0], parts[1]));
+        }
+        scanner.close();
+    }
 }
 
