@@ -175,9 +175,9 @@ public class UI {
 		}
 		a.setRating(r);
 	}
-
-	public void markFavorite(Song a) {
-		this.user.toggleFavorite(a);
+	
+	public void markFavorite(Song a, boolean x) {
+		a.setFavorite(x);
 	}
 
 }
