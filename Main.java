@@ -482,16 +482,52 @@ public class Main {
     	        	}
             		else if (input.equals("b")) {
             			System.out.println("Insert artist name");
+            			Song songs = null;
             			input = scanner.nextLine();
             			boolean found = false;
             			for (Song song : userInterface.getLibrarySongs()) {
             				if (song.getArtistName().equals(input)) {
+            					songs = song;
             					found = true;
             					System.out.println(song.getSongName() + ", " + song.getArtistName() + ", " + song.getAlbumName());
             				}
             			}
             			if (found == false) {
             				System.out.println("Artist has no songs in library");
+            			}
+            			else {
+                			System.out.println("Would you like to get its album information y/n");
+                			int cont = 1;
+                			while (cont != 0) {
+                				input = scanner.nextLine();
+                				if (input.equals("y")) {
+            	        			String name = songs.getArtistName();
+            	        			String albumName = songs.getAlbumName();
+            	        			for (Artist art : userInterface.getLibraryArtists()) {
+            	        				if (art.getArtistName().equals(name)) {
+            	        					for (Album alb : art.getAllAlbums()) {
+            	        						if (albumName.equals(alb.getAlbumName())) {
+            	        							System.out.println("Album: " + alb.getAlbumName());
+            	        							System.out.println("Artist: " + alb.getArtistName());
+            	        							System.out.println("Released: " + alb.getAlbumYear());
+            	        							System.out.println("Genre: " + alb.getAlbumGenre());
+            	        							System.out.println("Songs:");
+            	        							for (Song song : alb.getAllSongs()) {
+            	        								System.out.println("\t" + song.getSongName());
+            	        							}
+            	        						}
+            	        					}
+            	        				}
+            	        			}
+            	        			cont = 0;
+            	        		}
+                				else if (input.equals("n")) {
+                					cont = 0;
+                				}
+                				else {
+                					System.out.println("use y or n");
+                				}
+                			}
             			}
             		}
             		else if (input.equals("c")) {
