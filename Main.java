@@ -444,7 +444,42 @@ public class Main {
     	        				System.out.println(song1.getSongName() + ", " + song1.getArtistName() + ", " + song1.getAlbumName());
     	        			}
             			}
-            		}
+            			System.out.println("Would you like to get its album information y/n");
+            			int cont = 1;
+            			while (cont != 0) {
+            				input = scanner.nextLine();
+            				if (input.equals("y")) {
+        	        			for (Song song1 : songs) {
+        	        				String name = song1.getArtistName();
+        	        				String albumName = song1.getAlbumName();
+        	        				for (Artist art : userInterface.getLibraryArtists()) {
+        	        					if (art.getArtistName().equals(name)) {
+        	        						for (Album alb : art.getAllAlbums()) {
+        	        							if (albumName.equals(alb.getAlbumName())) {
+        	        								System.out.println("Album: " + alb.getAlbumName());
+        	        								System.out.println("Artist: " + alb.getArtistName());
+        	        								System.out.println("Released: " + alb.getAlbumYear());
+        	        								System.out.println("Genre: " + alb.getAlbumGenre());
+        	        								System.out.println("Songs:");
+        	        								for (Song song : alb.getAllSongs()) {
+        	        									System.out.println("\t" + song.getSongName());
+        	        								}
+        	        							}
+        	        						}
+        	        					}
+        	        				}
+            						
+        	        			}
+            					cont = 0;
+        	        		}
+            				else if (input.equals("n")) {
+            					cont = 0;
+            				}
+            				else {
+            					System.out.println("use y or n");
+            				}
+            			}
+    	        	}
             		else if (input.equals("b")) {
             			System.out.println("Insert artist name");
             			input = scanner.nextLine();
