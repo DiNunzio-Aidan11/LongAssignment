@@ -86,9 +86,6 @@ public class LibraryModel {
 	}
 	
 	public List<Song> getMostFrequentlyPlayed() {
-		if (frequentlyPlayed.isEmpty()) {
-			System.out.println("err");
-		}
         return frequentlyPlayed.entrySet()
             .stream()
             .sorted(Map.Entry.<Song, Integer>comparingByValue().reversed())
