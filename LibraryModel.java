@@ -61,6 +61,17 @@ public class LibraryModel {
 		this.playlists.add(playlist);
 	}
 	
+	public String findSongGenre(Song song) {
+        for (Album album : albums) {
+            for (Song iterSong : album.getAllSongs()) {
+                if (iterSong.equals(song)) {
+                    return album.getAlbumGenre();
+                }
+            }
+        }
+        return null;
+    }
+	
 	public void incrementGenreCount(String genre) {
 		if (this.genreCount.containsKey(genre)) {
 			this.genreCount.put(genre, this.genreCount.get(genre) + 1);
@@ -111,7 +122,7 @@ public class LibraryModel {
         recentlyPlayed.add(song);
     }
 	
-	public void addSong(Song song) {
+    public void addSong(Song song) {
 		// adds in the song to the library if it is not a duplicate
 		boolean seen = false;
 		for (Song cur : songs) {
@@ -128,6 +139,7 @@ public class LibraryModel {
 		}
 		this.songs.add(song);
         this.frequentlyPlayed.put(song, 0);
+        incrementGenreCount(findSongGenre(song));
 	}
 	
 	public void removeSong(Song song) {
