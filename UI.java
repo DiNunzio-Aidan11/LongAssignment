@@ -161,19 +161,23 @@ public class UI {
 		this.user.shuffle();
 	}
 	
-	public void saveChanges() {
-		// userSaveChanges()... 
+	public void shufflePlaylist(String playlist) {
+		this.user.shufflePlaylist(playlist);
 	}
-
+	
 	public void rateSong(Song a, Rating r) {
 		if (r == Rating.FIVESTAR) {
 			this.user.addToFavorites(a);
+			this.user.addToTopRated(a);
+		}
+		else if (r == Rating.FOURSTAR) {
+			this.user.addToTopRated(a);
 		}
 		a.setRating(r);
 	}
 
-	public void markFavorite(Song a, boolean x) {
-		a.setFavorite(x);
+	public void markFavorite(Song a) {
+		this.user.toggleFavorite(a);
 	}
 
 }
