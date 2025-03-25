@@ -1,5 +1,6 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 import java.lang.String;
 import java.io.IOException;
@@ -523,45 +524,30 @@ public class Main {
         			System.out.println("Input 'b': artist");
         			System.out.println("Input 'c': by rating");
         			input = scanner.nextLine();
-        		    // uses bubble sort for comparing songs
-        		    for (int i = 0; i < songs.size() - 1; i++) {
-        		        for (int j = 0; j < songs.size() - i - 1; j++) {
-        		            Song s1 = songs.get(j);
-        		            Song s2 = songs.get(j + 1);
+        	        Comparator<Song> comparator = null;
+        	        switch (input) {
+        	            case "a":
+        	                comparator = Comparator.comparing(Song::getSongName);
+        	                break;
+        	            case "b":
+        	                comparator = Comparator.comparing(Song::getArtistName);
+        	                break;
+        	            case "c":
+        	            	comparator = Comparator.comparing(Song::getRating, Comparator.nullsLast(Comparator.reverseOrder()));
+        	                break;
+        	            default:
+        	                System.out.println("Invalid input");
+        	                scanner.close();
+        	                return;
+        	        }
 
-        		            // Compare by title
-        		            boolean swap = false;
-        		            if (input.equals("a")) {
-        		            	if (s1.getSongName().compareTo(s2.getSongName()) > 0) {
-        		            		swap = true;
-        		            	}
-        		            } 
-        		            // compare by artist 
-        		            else if (input.equals("b")) { 
-        		            	if (s1.getArtistName().compareTo(s2.getArtistName()) > 0) {
-        		            		swap = true;
-        		            		}
-        		            } 
-        		            // compare by rating
-        		            else if (input.equals("c")) { 
-        		            	if (s1.getRating().compareTo(s2.getRating()) < 0) { 
-        		            		swap = true;
-        		            	}
-        		            }
-        		            else {
-        		            	System.out.println("invalid input");
-        		            }
-        		            // Swap elements if needed
-        		            if (swap) {
-        		                songs.set(j, s2);
-        		                songs.set(j + 1, s1);
-        		            }
-        		        }
-        		    }
-        		    System.out.println("Library Sorted");
-        		    for (Song song : songs) {
-        		        System.out.println(song.getSongName() + " - " + song.getArtistName() + " (Rating: " + song.getRating() + ")");
-        		    }
+        	        // Use Collections.sort with the chosen comparator
+        	        songs.sort(comparator);
+
+        	        // Print sorted songs
+        	        for (Song song : songs) {
+        	            System.out.println(song.getSongName() + ", " + song.getArtistName() + " (Rating: " + song.getRating() + ")");
+        	        }
         		    System.out.println();
         		}
         		else if (input.equals("e")) {
