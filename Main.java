@@ -255,6 +255,9 @@ public class Main {
         		System.out.println("Input 'm': remove album from library");
         		System.out.println("Input 'n': switch to store");
         		System.out.println("Input 'o': to shuffle playlist");
+                System.out.println("Input 'p': play song");
+                System.out.println("Input 'q': display recently played");
+                System.out.println("Input 'r': display frequently played");
         		System.out.println("Input 'logout': to logout");
         		
         		String input = scanner.nextLine();
@@ -939,6 +942,32 @@ public class Main {
         			userInterface.shufflePlaylist(input);
         			storeMode = true;
         		}
+                else if (input.equals("p")) {
+                    System.out.println("Enter the name of the song you would like to play");
+                    input = scanner.nextLine();
+                    boolean foundSong = false;
+                    for (Song song : userInterface.getLibrarySongs()) {
+                        if (song.getSongName().equals(input)) {
+                            System.out.println("Playing " + input);
+                            userInterface.playSong(song);
+                            foundSong = true;
+                            break;
+                        }
+                    }
+                    if (foundSong == false) {
+                        System.out.println("Song does not exist in library");
+                    }
+                }
+                else if (input.equals("q")) {
+                    for (Song song : userInterface.getRecentlyPlayed()) {
+                        System.out.println(song.getSongName());
+                    }
+                }
+                else if (input.equals("r")) {
+                    for (Song song : userInterface.getFrequentlyPlayed()) {
+                        System.out.println(song.getSongName());
+                    }
+                }
         		else if (input.equals("logout")) {
                     if (curUser != null) {
                         FileWriter clearer = new FileWriter(curUser.getUsername() + ".txt", false);
