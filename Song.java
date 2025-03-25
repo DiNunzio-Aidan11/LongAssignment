@@ -41,6 +41,12 @@ public class Song {
 	}
 	
 	public void setFavorite(boolean favorite) {
+		if (favorite) {
+			System.out.println(this.songName + " is set as favorite");
+		}
+		else {
+			System.out.println(this.songName + " is no longer a favorite");
+		}
 		this.favorite = favorite;
 	}
 	
