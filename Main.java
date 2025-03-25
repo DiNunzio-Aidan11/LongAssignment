@@ -1,8 +1,9 @@
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.lang.String;
+import java.io.IOException;
+import java.io.FileWriter;
 
 import model.Album;
 import model.Artist;
@@ -17,16 +18,16 @@ import view.UI;
 
 public class Main {
 	/*
-	 * First parses in the information to the store then calls for user inputs to process 
-	 */
+	 * First parses in the information to the store then calls for user inputs to process */
     public static void main(String[] args) throws IOException {
+
         Scanner scanner = new Scanner(System.in);
         //System.out.println("Enter Album Text File: ");
         //String fileName = scanner.nextLine();
 
-        File albumsFile = new File("albums.txt");
+        File albumsFile = new File("albums.txt"); 
         File usersFile = new File("users.txt");
-        
+
         if (!albumsFile.exists()) {  // Check if file exists before proceeding
             System.out.println("Error: File not found!");
             scanner.close();
@@ -44,9 +45,13 @@ public class Main {
         
         //TODO: add in stored information for users from other file
         Users users = new Users();
-        User curUser;
+        User curUser = null;
+
+        users.loadUsers();
+
         while (true) {
         	while (!loggedIn) {
+                System.out.println("========= login menu ==========");
                 System.out.println("Please Choose an Option:");
                 System.out.println("Input '1': Log in");
                 System.out.println("Input '2': Register User");
@@ -56,52 +61,84 @@ public class Main {
                 if (choice.equals("1")) {
                     System.out.print("Enter username: ");
                     String username = scanner.nextLine();
-                    if (users.userExists(username)) {
-                    	System.out.print("Enter password: ");
-                    	String password = scanner.nextLine();
-                    	password = Password.encrypt(password);
-                    
-                    	if (users.authenticate(username, password)) {
-                    		System.out.println("Login successful! Welcome, " + username);
-                    		loggedIn = true;
-                    		curUser = users.getUser(username);
-                    		userInterface.setUser(curUser);
-                    	} 
-                    	else {
-                    		System.out.println("Invalid credentials, try again.");
-                    	}
+
+                    File userFile = new File(username + ".txt");
+
+                    if (userFile.exists()) {
+                        System.out.print("Enter password: ");
+                        String password = scanner.nextLine();
+
+                        Scanner fileScanner = new Scanner(usersFile);
+                        boolean authenticated = false;
+
+                        while (fileScanner.hasNextLine()) {
+                            String line = fileScanner.nextLine();
+                            String[] parts = line.split(",");
+                            String fileUsername = parts[0];
+                            String encryptedPassword = parts[1];
+                            String inputEncrypted = Password.encrypt(password);
+
+                            if (username.equals(fileUsername) && inputEncrypted.equals(encryptedPassword)) {
+                                System.out.println("Login successfull! Welcome, " + username + "!");
+                                loggedIn = true;
+                                curUser = users.getUser(username);
+                                userInterface.setUser(curUser);
+                                authenticated = true;
+                                
+                                break;
+                            }
+                        }
+                        fileScanner.close();
+
+                        if (!authenticated && !loggedIn) {
+                            System.out.println("Invalid credentials, try again");
+                        }
                     }
                     else {
-                    	System.out.println("User does not exist");
+                        System.out.println("User does not exist");
                     }
-                } 
+
+                }
                 else if (choice.equals("2")) {
                 	String username = "";
                 	boolean uniqueUser = false;
-                	while (!uniqueUser) {
-                		System.out.print("Choose a username: ");
-                		username = scanner.nextLine();
-                		if (username.length() == 0) {
-                			System.out.println("Cant have blank username");
-                		}
-                		else if (users.userExists(username)) {
-                			System.out.println("username already taken");
-                		}
-                		else {
-                			uniqueUser = true;
-                		}
-                	}
+
+                    Scanner fileScanner = new Scanner(usersFile);
+                    ArrayList<String> fileUsers = new ArrayList<>();
+
+                    while (fileScanner.hasNextLine()) {
+                        String line = fileScanner.nextLine();
+                        String parts[] = line.split(",");
+                        String fileUsername = parts[0];
+                        fileUsers.add(fileUsername);
+                    }
+
+                    fileScanner.close();
+                    while (!uniqueUser) {
+                        System.out.print("Choose a username: ");
+                        username = scanner.nextLine();
+                        if (username.length() == 0) {
+                            System.out.println("Can't have blank username");
+                        }
+                        else if (fileUsers.contains(username)) {
+                            System.out.println("username already taken");
+                        }
+                        else {
+                            uniqueUser = true;
+                        }
+                    }
                     System.out.print("Choose a password: ");
                     String password = scanner.nextLine();
                     password = Password.encrypt(password);
-                    
+
                     if (users.addUser(username, password, usersFile)) {
-                    	users.createUserDataFile(username);
+                        users.createUserDataFile(username);
                         System.out.println("You can now log in.");
                     }
                 }
                 else if (choice.equals("3")) {
-                	break;
+                    scanner.close();
+                	return;
                 }
                 else {
                     System.out.println("Invalid option, try again.");
@@ -188,6 +225,11 @@ public class Main {
 	        		storeMode = false;
 	        	}
 	        	else if (input.equals("logout")) {
+                    if (curUser != null) {
+                        FileWriter clearer = new FileWriter(curUser.getUsername() + ".txt", false);
+                        clearer.close();
+                        curUser.writeUserInfo();
+                    }
 	        		loggedIn = false;
 	        	}
 	        	else {
@@ -203,12 +245,14 @@ public class Main {
         		System.out.println("Input 'd': print all songs in library in sorted order");
         		System.out.println("Input 'e': shuffle all songs in library");
         		System.out.println("Input 'f': rate song");
-        		System.out.println("Input 'g': add song to playlist");
-        		System.out.println("Input 'h': delete song from playlist");
-        		System.out.println("Input 'i': view playlist");
-        		System.out.println("Input 'j': remove song from library");
-        		System.out.println("Input 'k': remove album from library");
-        		System.out.println("Input 'l': switch to store");
+        		System.out.println("Input 'g': to (un)favorite song");
+        		System.out.println("Input 'h': add song to playlist");
+        		System.out.println("Input 'i': delete song from playlist");
+        		System.out.println("Input 'j': view playlist");
+        		System.out.println("Input 'k': shuffle playlist");
+        		System.out.println("Input 'l': remove song from library");
+        		System.out.println("Input 'm': remove album from library");
+        		System.out.println("Input 'n': switch to store");
         		System.out.println("Input 'logout': to logout");
         		
         		String input = scanner.nextLine();
@@ -474,6 +518,11 @@ public class Main {
         		else if (input.equals("d")) {
         		    ArrayList<Song> songs = userInterface.getLibrarySongs();
         		    
+        			System.out.println("How would you like to sort");
+        			System.out.println("Input 'a': by song title");
+        			System.out.println("Input 'b': artist");
+        			System.out.println("Input 'c': by rating");
+        			input = scanner.nextLine();
         		    // uses bubble sort for comparing songs
         		    for (int i = 0; i < songs.size() - 1; i++) {
         		        for (int j = 0; j < songs.size() - i - 1; j++) {
@@ -482,19 +531,25 @@ public class Main {
 
         		            // Compare by title
         		            boolean swap = false;
-        		            if (s1.getSongName().compareTo(s2.getSongName()) > 0) {
-        		                swap = true;
+        		            if (input.equals("a")) {
+        		            	if (s1.getSongName().compareTo(s2.getSongName()) > 0) {
+        		            		swap = true;
+        		            	}
         		            } 
         		            // compare by artist 
-        		            else if (s1.getSongName().equals(s2.getSongName()) &&
-        		                     s1.getArtistName().compareTo(s2.getArtistName()) > 0) {
-        		                swap = true;
+        		            else if (input.equals("b")) { 
+        		            	if (s1.getArtistName().compareTo(s2.getArtistName()) > 0) {
+        		            		swap = true;
+        		            		}
         		            } 
         		            // compare by rating
-        		            else if (s1.getSongName().equals(s2.getSongName()) &&
-        		                     s1.getArtistName().equals(s2.getArtistName()) &&
-        		                     s1.getRating().compareTo(s2.getRating()) < 0) { // Compare enums directly
-        		                swap = true;
+        		            else if (input.equals("c")) { 
+        		            	if (s1.getRating().compareTo(s2.getRating()) < 0) { 
+        		            		swap = true;
+        		            	}
+        		            }
+        		            else {
+        		            	System.out.println("invalid input");
         		            }
         		            // Swap elements if needed
         		            if (swap) {
@@ -517,7 +572,13 @@ public class Main {
         		else if (input.equals("f")) {
         			System.out.println("Select song to rate");
         			input = scanner.nextLine();
-        			ArrayList<Song> foundSongs = userInterface.getLibrarySongs();
+        			ArrayList<Song> songs = userInterface.getLibrarySongs();
+        			ArrayList<Song> foundSongs = new ArrayList<>();
+        			for (Song song : songs) {
+        				if (song.getSongName().equals(input)) {
+        					foundSongs.add(song);
+        				}
+        			}
         			if (foundSongs.size() == 0) {
         				System.out.println("Song is not in your library");
         			}
@@ -600,13 +661,54 @@ public class Main {
         			}
         		}
         		else if (input.equals("g")) {
+        			System.out.println("Select song to (un)favorite");
+        			input = scanner.nextLine();
+        			ArrayList<Song> songs = userInterface.getLibrarySongs();
+        			ArrayList<Song> foundSongs = new ArrayList<>();
+        			for (Song song : songs) {
+        				if (song.getSongName().equals(input)) {
+        					foundSongs.add(song);
+        				}
+        			}
+        			if (foundSongs.size() == 0) {
+        				System.out.println("Song is not in your library");
+        			}
+        			else if (foundSongs.size() > 1) {
+        				boolean songSelected = false;
+        				while (songSelected == false) {
+	        				System.out.println("Enter artist of desired song");
+	        				for (Song song : foundSongs) {
+	        					System.out.println(song.getArtistName());
+	        				}
+	        				input = scanner.nextLine();
+	        				for (Song song1: foundSongs) {
+	        					if (song1.getArtistName().equals(input)) {
+	        						songSelected = true;
+	        						Song ourSong = song1;
+	        						userInterface.markFavorite(ourSong, true);
+	        						
+	        					}
+	        				}
+        				}
+        			}
+        			else {
+        				userInterface.markFavorite(foundSongs.get(0), true);
+        			}
+        		}
+        		else if (input.equals("h")) {
         			System.out.println("Enter playlist you with to add song to");
         			input = scanner.nextLine();
         			for (Playlist playlist : userInterface.getLibraryPlaylists()) {
         				if (playlist.getPlaylistName().equals(input)) {
         					System.out.println("Enter song you wish to add to playlist");
         					input = scanner.nextLine();
-        					ArrayList<Song> foundSongs = userInterface.getLibrarySongs();
+        					ArrayList<Song> songs = userInterface.getLibrarySongs();
+        					ArrayList<Song> foundSongs = new ArrayList<>();
+        					for (Song song : songs) {
+        						if (song.getSongName().equals(input)) {
+        							foundSongs.add(song);
+        						}
+        					}
                 			if (foundSongs.size() == 0) {
                 				System.out.println("Song is not in library");
                 			}
@@ -637,7 +739,7 @@ public class Main {
         				}
         			}
         		}
-        		else if (input.equals("h")) {
+        		else if (input.equals("i")) {
         			System.out.println("Enter playlist you wish to remove song from");
         			input = scanner.nextLine();
         			for (Playlist playlist : userInterface.getLibraryPlaylists()) {
@@ -655,18 +757,57 @@ public class Main {
         			}
         			System.out.println("Song or Playlist not in library");
         		}
-        		else if (input.equals("i")) {
+        		else if (input.equals("j")) {
+        			boolean found = false;
         			System.out.println("Enter playlist you wish to view");
         			input = scanner.nextLine();
         			for (Playlist playlist : userInterface.getLibraryPlaylists()) {
         				if (playlist.getPlaylistName().equals(input)) {
+        					found = true;
         					for (Song song : playlist.getPlaylistSongs()) {
-        						System.out.println(song.getSongName() + ", " + song.getArtistName());
+        						System.out.println(song.getSongName() + " - " + song.getArtistName());
         					}
         				}
         			}
+        			if (found == false) {
+        				System.out.println("Playlist not found");
+        			}
         		}
-        		else if (input.equals("j")) {
+
+
+                else if (input.equals("k")) {
+                    System.out.print("Enter the name of the album you want to remove: ");
+                    input = scanner.nextLine();
+                    ArrayList<Album> foundAlbum = new ArrayList<>();
+                    for (Album album : userInterface.getLibraryAlbums()) {
+                        if (album.getAlbumName().equals(input)) {
+                            foundAlbum.add(album);
+                        }
+                    }
+                    if (foundAlbum.size() == 0) {
+                        System.out.println("Album not in library");
+                    }
+                    else if (foundAlbum.size() != 1){
+                        System.out.println("From which artist: ");
+                        for (int i = 0; i < foundAlbum.size(); i++) {
+                            System.out.println(foundAlbum.get(i).getArtistName());
+                        }
+                        input = scanner.nextLine();
+                        for (int i = 0; i < foundAlbum.size(); i++) {
+                            if (foundAlbum.get(i).getArtistName().equals(input)) {
+                                userInterface.removeAlbum(foundAlbum.get(i));
+                                System.out.println("Succesfully removed album");
+                                break;
+                            }
+                        }	
+                    }
+                    else {
+                        userInterface.removeAlbum(foundAlbum.get(0));
+                        System.out.println("Succesfully removed album");
+                    }
+                }            
+
+        		else if (input.equals("l")) {
         			System.out.print("Enter the name of the song you want to remove: ");
         			input = scanner.nextLine();
         			ArrayList<Song> foundSongs = new ArrayList<>();
@@ -698,7 +839,7 @@ public class Main {
         			}
         			
         		}
-        		else if (input.equals("k")) {
+        		else if (input.equals("m")) {
         			System.out.print("Enter the name of the album you want to remove: ");
         			input = scanner.nextLine();
         			ArrayList<Album> foundAlbum = new ArrayList<>();
@@ -730,10 +871,15 @@ public class Main {
         			}
         			
         		}
-        		else if (input.equals("l")) {
+        		else if (input.equals("n")) {
         			storeMode = true;
         		}
         		else if (input.equals("logout")) {
+                    if (curUser != null) {
+                        FileWriter clearer = new FileWriter(curUser.getUsername() + ".txt", false);
+                        clearer.close();
+                        curUser.writeUserInfo();
+                    }
         			loggedIn = false;
         		}
         		else {

@@ -7,4 +7,7 @@ public enum Rating {
 	FOURSTAR,
 	FIVESTAR;
 
+    public int toInt() {
+        return this.ordinal() + 1;
+    }
 }

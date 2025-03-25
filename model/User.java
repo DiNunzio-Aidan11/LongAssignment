@@ -4,8 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
 
 public class User extends LibraryModel {
     private String username;
@@ -41,7 +42,88 @@ public class User extends LibraryModel {
 		for (Playlist playlist : this.playlists) {
 			playlistData.put(playlist, playlist.getPlaylistSongs());
 		}
-		
-	}
+
+        bufferedWriter.write("Songs: (");
+        ArrayList<String> lines = new ArrayList<>();
+
+        for (Song song : songData.keySet()) {
+            Rating rating = song.getRating();
+            if (rating != null) {
+                lines.add(song.getSongName() + " " + rating.toInt());
+            }
+            else {
+                lines.add(song.getSongName() + " " + -1);
+            }
+        }
+
+        bufferedWriter.write(String.join(",", lines) + ")\n");
+        lines.clear();
+
+        bufferedWriter.write("Favorites: (");
+
+        for (Song song : this.favorites) {
+            lines.add(song.getSongName());
+        }
+
+        bufferedWriter.write(String.join(",", lines) + ")\n");
+        lines.clear();
+
+        bufferedWriter.write("Top Rated: (");
+
+        for (Song song : this.topRated) {
+            lines.add(song.getSongName());
+        }
+
+        bufferedWriter.write(String.join(",", lines) + ")\n");
+        lines.clear();
+
+        bufferedWriter.write("Playlists: (");
+
+        for (Playlist playlist : playlists) {
+            System.out.println("Playlist " + playlist.getPlaylistName() + " has " + playlist.getPlaylistSongs().size() + " songs");
+            bufferedWriter.write(playlist.getPlaylistName() + ": [");
+            for (Song song : playlist.getPlaylistSongs()) {
+                lines.add(song.getSongName());
+            }
+            bufferedWriter.write(String.join(",", lines) + "]");
+            lines.clear();
+        }
+
+        bufferedWriter.write(")\n");
+
+        bufferedWriter.write("Albums: (");
+
+        for (Album album : albums) {
+            lines.add(album.getAlbumName());
+        }
+
+        bufferedWriter.write(String.join(",", lines) + ")\n");
+        lines.clear();
+
+        bufferedWriter.write("Artists: (");
+
+        for (Artist artist : artists) {
+            lines.add(artist.getArtistName());
+        }
+
+        bufferedWriter.write(String.join(",", lines) + ")\n");
+        lines.clear();
+
+        bufferedWriter.close();
+        fileWriter.close();
+    }
+
+    public void initializeDatabase() throws IOException {
+        File file = new File(username + ".txt");
+        Scanner fileScanner = new Scanner(file);
+
+        while (fileScanner.hasNextLine()) {
+            String line = fileScanner.nextLine();
+            if (line.startsWith("Songs: ")) {
+                
+            }
+        }
+
+    }
 	
 }

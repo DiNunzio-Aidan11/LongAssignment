@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.BufferedWriter;
+import java.util.Scanner;
 
 public class Users {
     private HashMap<String, User> hash;
@@ -59,6 +60,15 @@ public class Users {
         }
         return false;
     }
-        
+
+    public void loadUsers() throws IOException {
+        File file = new File("users.txt");
+        Scanner scanner = new Scanner(file);
+        while (scanner.hasNextLine()) {
+            String[] parts = scanner.nextLine().split(",");
+            this.hash.put(parts[0], new User(parts[0], parts[1]));
+        }
+        scanner.close();
+    }
 }
 

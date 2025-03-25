@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Password {
+
     public static String encrypt(String password) {
         String salt = getFixedSalt();
         String algorithm = "SHA-256";

@@ -1,12 +1,15 @@
 package model;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class LibraryModel {
-	private ArrayList<Song> songs;
-	private ArrayList<Song> favorites;
-	private ArrayList<Playlist> playlists;
-	private ArrayList<Album> albums;
-	private ArrayList<Artist> artists;
+	protected ArrayList<Song> songs;
+	protected ArrayList<Song> favorites;
+	protected ArrayList<Song> topRated;
+	protected ArrayList<Playlist> playlists;
+	protected ArrayList<Album> albums;
+	protected ArrayList<Artist> artists;
+	protected HashMap<String, Integer> genreCount;
 	
 	public LibraryModel() {
 		this.songs = new ArrayList<>();
@@ -14,6 +17,8 @@ public class LibraryModel {
 		this.playlists = new ArrayList<>();
 		this.albums = new ArrayList<>();
 		this.artists = new ArrayList<>();
+		this.genreCount = new HashMap<>();
+		this.topRated = new ArrayList<>();
 	}
 	
 	// copy constructor
@@ -23,6 +28,30 @@ public class LibraryModel {
 		this.playlists = other.getLibraryPlaylists();
 		this.albums = other.getLibraryAlbums();
 		this.artists = other.getLibraryArtists();
+	}
+	
+	public void incrementGenreCount(String genre) {
+		if (this.genreCount.containsKey(genre)) {
+			this.genreCount.put(genre, this.genreCount.get(genre) + 1);
+			checkGenreCount(genre);
+		}
+		else {
+			this.genreCount.put(genre, 1);
+		}
+	}
+	
+	public void checkGenreCount(String genre) {
+		if (this.genreCount.get(genre) == 10) {
+			Playlist playlist = new Playlist(genre);
+			for (Song song : this.songs) {
+				String albumName = song.getAlbumName();
+				for (Album album : this.albums) {
+					if (album.getAlbumName().equals(albumName) && album.getAlbumGenre().equals(genre)) {
+						playlist.addSong(song);
+					}
+				}
+			}
+		}
 	}
 	
 	public void addPlaylist(String name) {
@@ -58,23 +87,6 @@ public class LibraryModel {
 			this.favorites.add(song);
 		}
 		this.songs.add(song);
-	}
-	
-	public void removeSong(Song song) {
-		for (Album album : this.albums) {
-			if (album.songInAlbum(song) == true && album.getAllSongs().size() == 1) {
-				removeAlbum(album);
-				return;
-			}
-		}
-		this.songs.remove(song);
-	}
-	
-	public void removeAlbum(Album album) {
-		for (Song song : album.getAllSongs()) {
-			this.songs.remove(song);
-		}
-		this.albums.remove(album);
 	}
 	
 	public void addAlbum(Album album) {
@@ -143,31 +155,49 @@ public class LibraryModel {
 		return;
 	}
 	
-	public void toggleFavorite(Song song) {
-		if (song.isFavorite()) {
-			song.setFavorite(false);
-			this.favorites.remove(song);
-			return;
+	public void addToFavorites(Song song) {
+		// adds a song as favorite if found
+		boolean seen = false;
+		for (Song cur : favorites) {
+			if (cur.getArtistName().equals(song.getArtistName()) && cur.getSongName().equals(song.getSongName())) {
+				seen = true;
+			}
+			if (seen) {
+				return;
+			}
 		}
-		song.setFavorite(true);
 		this.favorites.add(song);
 	}
 	
-	public void rateSong(Song song, Rating rating) {
-		song.setRating(rating);
-		if (rating == Rating.FIVESTAR) {
-			if(!song.isFavorite()) {
-				toggleFavorite(song);
+	public void addToTopRated(Song song) {
+		boolean seen = false;
+		for (Song cur : topRated) {
+			if (cur.getArtistName().equals(song.getArtistName()) && cur.getSongName().equals(song.getSongName())) {
+				seen = true;
+			}
+			if (seen) {
+				return;
 			}
 		}
+		this.topRated.add(song);
 	}
 	
 	public ArrayList<Playlist> getLibraryPlaylists() {
-		return playlists;
+		// returns a copy of Library Playlists
+		ArrayList<Playlist> copy = new ArrayList<>();
+		for(Playlist playlist : playlists) {
+			copy.add(new Playlist(playlist));
+		}
+		return copy;
 	}
 	
 	public ArrayList<Song> getLibrarySongs() {
-		return songs;
+		// returns a copy of Library Songs
+		ArrayList<Song> copy = new ArrayList<>();
+		for(Song song : songs) {
+			copy.add(new Song(song));
+		}
+		return copy;
 	}
 	
 	public void setLibrarySongs(ArrayList<Song> songs) {
@@ -175,22 +205,30 @@ public class LibraryModel {
 		this.songs = songs;
 	}
 	
-	public void setPlaylist(ArrayList<Song> songs, Playlist pl) {
-		// allows for shuffle 
-		pl.setPlaylist(songs);
-		this.songs = songs;
-	}
-	
 	public ArrayList<Album> getLibraryAlbums() {
-		return albums;
+		// returns a copy of Library Albums
+		ArrayList<Album> copy = new ArrayList<>();
+		for(Album album : albums) {
+			copy.add(new Album(album));
+		}
+		return copy;
 	}
 	
 	public ArrayList<Artist> getLibraryArtists() {
-		return artists;
+		// returns a copy of Library Artists
+		ArrayList<Artist> copy = new ArrayList<>();
+		for(Artist artist : artists) {
+			copy.add(new Artist(artist));
+		}
+		return copy;
 	}
 	
 	public ArrayList<Song> getLibraryFavorites() {
-		return favorites;
+		// returns a copy of Library favorites
+		ArrayList<Song> copy = new ArrayList<>();
+		for(Song song : favorites) {
+			copy.add(new Song(song));
+		}
+		return copy;
 	}
-	
 }
