@@ -86,21 +86,25 @@ public class LibraryModel {
 	}
 	
 	public List<Song> getMostFrequentlyPlayed() {
-	    return frequentlyPlayed.entrySet()
-	        .stream()
-	        .sorted(Map.Entry.<Song, Integer>comparingByValue().reversed())
-	        .limit(10)
-	        .map(Map.Entry::getKey)
-	        .collect(Collectors.toList());
-	}
-	
-	
+		if (frequentlyPlayed.isEmpty()) {
+			System.out.println("err");
+		}
+        return frequentlyPlayed.entrySet()
+            .stream()
+            .sorted(Map.Entry.<Song, Integer>comparingByValue().reversed())
+            .limit(10)
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toList());
+    }
+
     public void playSong(Song song) {
         frequentlyPlayed.put(song, frequentlyPlayed.getOrDefault(song, 0) + 1);
+        addToRecentlyPlayed(song);
     }
 
     public ArrayList<Song> getRecentlyPlayed() {
         return this.recentlyPlayed;
+    
     }
     
     public void addToRecentlyPlayed(Song song) {
@@ -126,7 +130,7 @@ public class LibraryModel {
 			this.favorites.add(song);
 		}
 		this.songs.add(song);
-		this.frequentlyPlayed.put(song, 0);
+        this.frequentlyPlayed.put(song, 0);
 	}
 	
 	public void removeSong(Song song) {
