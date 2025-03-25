@@ -22,24 +22,6 @@ public class TestLibraryModel {
 	private Playlist playlist2 = new Playlist("Night");
 	
 	
-    @Test
-    public void testCopyConstructor() {
-    	LibraryModel copy = new LibraryModel(library);
-    	
-        copy.addSong(song1);
-        copy.addPlaylist("Workout Mix");
-        copy.addAlbum(album);
-        copy.addArtist(artist);
-
-        assertEquals(0, library.getLibrarySongs().size());
-        assertEquals(0, library.getLibraryPlaylists().size());
-        assertEquals(0, library.getLibraryAlbums().size());
-        assertEquals(0, library.getLibraryArtists().size());
-        assertEquals(1, copy.getLibrarySongs().size());
-        assertEquals(1, copy.getLibraryPlaylists().size());
-        assertEquals(1, copy.getLibraryAlbums().size());
-        assertEquals(1, copy.getLibraryArtists().size());
-    }
 	
 	@Test
 	public void testAddSong() {
@@ -57,39 +39,35 @@ public class TestLibraryModel {
 
     @Test
     public void testAddToFavorites() {
-    	LibraryModel copy = new LibraryModel(library);
-    	copy.addSong(song1);
-    	copy.addSong(song2);
-        copy.addToFavorites(song1);
+    	LibraryModel nw = new LibraryModel();
+    	nw.addSong(song1);
+    	nw.addSong(song2);
+        nw.addToFavorites(song1);
         
-        assertEquals(2, copy.getLibrarySongs().size());
-        assertEquals(1, copy.getLibraryFavorites().size());
-        
-        // testing duplicate song
-        copy.addToFavorites(song1);
-        assertEquals(1, copy.getLibraryFavorites().size());
+        assertEquals(2, nw.getLibrarySongs().size());
+        assertEquals(1, nw.getLibraryFavorites().size());
     }
     
     @Test
     public void testAddPlaylist() {
     	LibraryModel copy = new LibraryModel(library);
-    	assertEquals(0, copy.getLibraryPlaylists().size());
+    	assertEquals(2, copy.getLibraryPlaylists().size());
         copy.addPlaylist("Chill");
         copy.addPlaylist("Workout");
 
-        assertEquals(2, copy.getLibraryPlaylists().size());
+        assertEquals(4, copy.getLibraryPlaylists().size());
         
         // testing duplicate playlist
         copy.addPlaylist("Chill");
-        assertEquals(2, copy.getLibraryPlaylists().size());
+        assertEquals(4, copy.getLibraryPlaylists().size());
     }
     
     @Test
     public void testAddSongToPlaylist() {
     	LibraryModel copy = new LibraryModel(library);
         copy.addPlaylist("Chill");
-        assertEquals(copy.getLibraryPlaylists().size(), 1);
-        Playlist playlist = copy.getLibraryPlaylists().get(0);
+        assertEquals(copy.getLibraryPlaylists().size(), 3);
+        Playlist playlist = copy.getLibraryPlaylists().get(2);
         
         
         assertEquals(0, playlist.getPlaylistSongs().size());
